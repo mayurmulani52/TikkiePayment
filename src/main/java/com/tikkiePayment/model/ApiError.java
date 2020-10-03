@@ -1,4 +1,4 @@
-package com.tikkiePayment.model;
+package com.tikkiepayment.model;
 import java.util.Objects;
 
 import org.springframework.validation.annotation.Validated;

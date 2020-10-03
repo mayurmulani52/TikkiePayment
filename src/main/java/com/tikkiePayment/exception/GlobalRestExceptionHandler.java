@@ -1,4 +1,4 @@
-package com.tikkiePayment.exception;
+package com.tikkiepayment.exception;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.tikkiePayment.model.ApiError;
+import com.tikkiepayment.model.ApiError;
 
 import lombok.extern.slf4j.Slf4j;
 

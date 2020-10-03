@@ -1,4 +1,4 @@
-package com.tikkiePayment.sercurity;
+package com.tikkiepayment.sercurity;
 
 import java.io.IOException;
 
@@ -15,7 +15,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tikkiePayment.model.ApiError;
+import com.tikkiepayment.model.ApiError;
 
 @Component
 public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {

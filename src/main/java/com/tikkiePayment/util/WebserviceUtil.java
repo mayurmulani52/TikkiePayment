@@ -1,4 +1,4 @@
-package com.tikkiePayment.util;
+package com.tikkiepayment.util;
 
 import java.text.Normalizer;
 
@@ -12,7 +12,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
-import com.tikkiePayment.exception.TikkiePaymentRuntimeException;
+import com.tikkiepayment.exception.TikkiePaymentRuntimeException;
 
 import lombok.extern.slf4j.Slf4j;
 

@@ -1,4 +1,4 @@
-package com.tikkiePayment.config;
+package com.tikkiepayment.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

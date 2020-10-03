@@ -1,6 +1,6 @@
-package com.tikkiePayment.service;
+package com.tikkiepayment.service;
 
-import com.tikkiePayment.entity.Audit;
+import com.tikkiepayment.entity.Audit;
 
 public interface AuditService {
 

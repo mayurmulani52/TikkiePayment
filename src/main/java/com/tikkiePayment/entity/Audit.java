@@ -1,4 +1,4 @@
-package com.tikkiePayment.entity;
+package com.tikkiepayment.entity;
 
 import java.io.Serializable;
 import java.util.Date;

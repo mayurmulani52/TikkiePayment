@@ -1,4 +1,4 @@
-package com.tikkiePayment.exception;
+package com.tikkiepayment.exception;
 
 import java.io.Serializable;
 

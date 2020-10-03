@@ -1,4 +1,4 @@
-package com.tikkiePayment.aspect;
+package com.tikkiepayment.aspect;
 
 
 import java.net.InetAddress;
@@ -26,9 +26,9 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tikkiePayment.entity.Audit;
-import com.tikkiePayment.service.AuditService;
-import com.tikkiePayment.util.CommonUtil;
+import com.tikkiepayment.entity.Audit;
+import com.tikkiepayment.service.AuditService;
+import com.tikkiepayment.util.CommonUtil;
 
 import lombok.extern.slf4j.Slf4j;
 

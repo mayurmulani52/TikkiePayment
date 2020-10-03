@@ -1,13 +1,13 @@
-package com.tikkiePayment.service.impl;
+package com.tikkiepayment.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tikkiePayment.entity.Audit;
-import com.tikkiePayment.repository.AuditRepository;
-import com.tikkiePayment.service.AuditService;
+import com.tikkiepayment.entity.Audit;
+import com.tikkiepayment.repository.AuditRepository;
+import com.tikkiepayment.service.AuditService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,4 +25,5 @@ public class AuditServiceImpl implements AuditService {
         log.info("audit created with id: {}", a.getAuditId());
         return a;
     }
+
 }

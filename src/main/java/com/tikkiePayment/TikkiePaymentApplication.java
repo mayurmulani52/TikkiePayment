@@ -1,4 +1,4 @@
-package com.tikkiePayment;
+package com.tikkiepayment;
 
 import java.time.ZonedDateTime;
 import java.util.TimeZone;

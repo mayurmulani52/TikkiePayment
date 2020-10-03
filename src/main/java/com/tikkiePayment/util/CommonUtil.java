@@ -1,4 +1,4 @@
-package com.tikkiePayment.util;
+package com.tikkiepayment.util;
 
 public class CommonUtil {
 
