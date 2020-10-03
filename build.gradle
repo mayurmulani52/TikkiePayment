@@ -1,0 +1,66 @@
+plugins {
+	id 'org.springframework.boot' version '2.3.4.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+	id 'java'
+	id 'com.palantir.docker' version '0.25.0'
+	id 'jacoco'
+	id 'eclipse'
+	id 'idea'
+}
+
+group = 'tikkiePayment'
+version = '0.0.1'
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+
+bootJar {
+    baseName = 'tikkie-payment'
+    version =  '0.0.1'
+}
+
+task unpack(type: Copy) {
+    dependsOn bootJar
+    from(zipTree(tasks.bootJar.outputs.files.singleFile))
+    into("build/dependency")
+}
+
+docker {
+	name "${project.group}/${bootJar.baseName}"
+	dockerfile file('Dockerfile_local')
+	copySpec.from(tasks.unpack.outputs).into("dependency")
+	buildArgs(['DEPENDENCY': "dependency"])
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+//	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	
+	implementation 'org.apache.commons:commons-lang3:3.10'
+	
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+	
+	implementation 'co.elastic.logging:logback-ecs-encoder:0.4.0'
+	
+	implementation 'org.springframework.data:spring-data-mongodb:3.0.4.RELEASE'
+	
+	
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	
+	implementation('com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.3')
+	
+	implementation 'org.json:json:20190722'
+}

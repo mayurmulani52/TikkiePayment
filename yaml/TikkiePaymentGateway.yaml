@@ -1,0 +1,1776 @@
+openapi: "3.0.0"
+info:
+  version: "2.1.2"
+  title: Tikkie
+  description: |-
+    # Overview
+    The Tikkie API enables Tikkie business customers to create payment requests.
+
+    This API provides the following functionality:
+    - Create payment requests and retrieve transaction details
+    - List payments that have been made on a request
+    - Refund payments and retrieve refund details
+    - Subscribe to notifications on payments, refunds, and bundled payouts.
+    - Retrieve transaction bundles. Bundled payout must be enabled.
+
+    For more information, see [https://tikkie.me](https://tikkie.me).
+
+    ## App token
+    An app token is a unique token per API connection. It is used to identify your company.
+    Your Tikkie account can have multiple app tokens. It is possible to assign different permissions to this token.
+
+    >**Important:** In a production environment, `appToken` is created in the [Tikkie Business Portal](https://business.tikkie.me).
+
+    `appToken` has three permission types, these are as follows:
+
+    | Permission | Description|
+    |---|---|
+    | Payment Request | Create payment requests, retrieve payment request details, execute payments and refunds, and create subscribe to payment request notifications. |
+    | Refund          | Create refunds. Refund is an additional permission on top of Payment Request). |
+    | Transactions    | Retrieve transaction bundles and subscribe to transaction notifications. |
+
+    ## Thresholds
+
+    Different thresholds apply to aspects of payment requests, such as: the number of payments per payment request, the maximum amount of a payment request, and the maximum yield.
+    These thresholds are discussed on a per customer basis when access to production is requested.
+    These thresholds are not applicable in the sandbox environment.
+
+    ## Payout of transactions
+
+    By default, your Tikkie transactions are bundled and paid out on your account once a day. To get transactions insights, the application must have transactions permission. For more information, see [App token](#section/Overview/App-token).
+
+    For some businesses transactions are paid out individually and directly. In that case, the application doesn't need the transactions functionality.
+
+    Bundle information can be retrieved with the [GET Transaction Bundles](#operation/getBundleList) and [GET Transaction Bundle](#operation/getBundle) endpoints.
+
+    ### Downloading transaction bundle files
+
+    It is possible to download a file that contains all transactions for a specific bundle, which can be used in your bookkeeping system. Currently, we support the CAMT.053 format only.
+
+    Files are available for download from the moment that the bundle has been paid out. If you want to get notified when this happens, please set up a transactions subscription using: [POST Transactions Subscription](#operation/subscribeTransactionsNotifications).
+    The full file url can be found in the `files` property of the bundle by executing [GET Bundle](#operation/getBundle).
+    When the url is obtained, perform a GET on the url with the `App token` and `API Key` headers.
+
+    # Requirements
+    To use this API in a production environment, you must have the following:
+    - Tikkie contract. [Click here to sign up](https://www.tikkie.me/aanvragen-zakelijk).
+    - An [app token](#section/Overview/App-token) that is created in [Tikkie Business Portal](https://business.tikkie.me). This is not required to use this API in the sandbox.
+
+    >**Important:** Consumer to Consumer (C2C) use of the API is prohibited.
+
+    >**Important:** Generation of payment requests on behalf of third parties is prohibited.
+
+    # Sandbox access
+
+    Use the ABN AMRO Developer Sandbox to access dummy data, and safely test all functionality of an API.
+    For most products, the sandbox environment is identical to production.
+
+    To gain access to the Tikkie Payment Request API in a sandbox environment, complete the [Tutorial](#section/Tutorial).
+
+    # Production access
+
+    When you are ready to go live with your application, complete the following steps:
+
+    >**Important:** In production, the `appToken`, described in [Step 1](#section/Tutorial/Step-1-Get-an-API-key), is created in the [Tikkie Business Portal](https://business.tikkie.me). The functionality described in this step is available in the sandbox only.
+
+    >**Note:** To go live with your application, you must create a new application in the developer portal. A different API key is required for your production environment. This is described below.
+
+    1. Login to your account.
+    1. In the top navigation bar, click **My Apps**.
+    1. Click **+ Add a new App**.
+    1. Enter a name for your application, select **Tikkie**, and click **Submit**.
+    1. Go to the [Contact form](https://developer.abnamro.com/contact).
+    1. In the **Support Category** field, select **Access to production**.
+    1. In the **Subject field**, enter the name of your application and request access, in the following format:
+      `Application name=Tikkie: request for access to production.`
+    1. In the **Email** field, use the same developer e-mail that you used when setting up your application.
+    1. In the **Message** field, enter: `Request production access`.
+    1. Click **Send**.
+    1. The Tikkie Service Team will contact you to discuss the details of your request. Once approved, you are ready to use this API in a live environment.
+
+    # Tutorial
+
+    This tutorial describes how to connect the Tikkie API to the sandbox environment, along with the APIs functionality.
+
+    You can also: [run this API in Postman](https://app.getpostman.com/run-collection/4d3799a37e2f291c0cc8)
+
+    ## Step 1 - Get an API key
+
+    1. Register and create an account:
+      1. Go to <a href="https://developer.abnamro.com/" target="_blank">https://developer.abnamro.com/</a> and click **Sign up**.
+      1. Enter your details, and click **Create an account**.
+      1. Developer Support will send you an activation link by email.
+      1. Click the activation link.
+    1. Create and register an application:
+      1. Log in to your account.
+      1. In the top navigation bar, click **My Apps**.
+      1. Click **Add a new App** or **+**.
+      1. In the **App name** field, enter a name for your application.
+      1. In the **API product** field, select **Tikkie API**, and click **Submit**.
+    1. Obtain your API key:
+      1. In the top navigation bar, click **My Apps**.
+      1. Click on the app you created.
+      1. Copy the **API Key** number..
+
+    ## Step 2 - Create a sandbox appToken
+
+    >**Important:** In a production environment, `appToken` is created in the [Tikkie Business Portal](https://business.tikkie.me).
+    The functionality described in this step is available in the sandbox environment only.
+
+    To create a new application, which has all rights enabled, using the API key you obtained in the previous step, execute: [POST Sandbox App](#operation/createSandboxApp).
+
+    The response contains an `appToken` which is used in subsequent requests.
+
+    ## Step 3 - Create a payment request
+
+    To create a payment, using the `appToken` you created in Step 2, execute: [POST Payment Request](#operation/createPaymentRequest).
+
+    This operation creates a new payment request as specified by the body of the request, and returns a `paymentRequestToken` which is used to access your payment request.
+
+    The operation also returns a `url` that is used to direct the user to where the request can be paid.
+
+    ## Step 4 - Retrieve payment request details
+
+    To retrieve details of payment requests, use one of the following operations:
+
+    - [GET Payment Request](#operation/getPaymentRequest): Returns the details of one payment request, specified by a `paymentRequestToken`.
+
+    - [GET Payment Requests](#operation/getPaymentRequestList): Returns a list of payment requests based on the query parameters passed in the request. This list is paginated.
+
+    ## Step 5 - Retrieve payment details
+
+    When a user pays a payment request, the transaction is marked as a 'payment'. This indicates that the payment is completed.
+
+    To retrieve payment details, use one of the following operations:
+
+    - [GET Payment](#operation/getPayment): Returns the details of one payment, specified by a `paymentToken`.
+
+    - [GET Payments](#operation/getPaymentList): Returns a list of payments based on the query parameters passed in the request. This list is paginated.
+
+    ## Step 6 - Create a refund
+
+    To create a refund, execute: [POST Refund](#operation/createRefund).
+
+    This operation initiates a refund on a specific payment, and returns a `refundToken` which can be used to retrieve details.
+
+    ## Step 7 - Retrieve refund details
+
+    To retrieve refund details, execute: [GET Refund](#operation/getRefund).
+
+    This operation returns the details of one refund, specified by a `refundToken`.
+
+    ## Step 8 - Set up a payment subscription
+
+    To receive notifications when a payment is paid, or when a refund is been paid out, set up a subscription using: [POST Notification Subscription](#operation/subscribePaymentRequestNotifications).
+
+    HTTP post requests will be made to the specified `url`, containing information about the payment or refund in the body of the request.
+
+    ## Step 9 - To cancel a payment subscription
+
+    To cancel a subscription and stop receiving notifications, execute: [DELETE Notification Subscription](#operation/deletePaymentRequestNotifications).
+
+    ## Step 10 - Retrieve transaction bundle details
+
+    To retrieve details of transactions, use one of the following operations:
+
+    - [GET Transaction Bundle](#operation/getBundle): Returns the details of one transaction bundle, specified by a `bundleId`.
+
+    - [GET Transaction Bundles](#operation/getBundleList): Returns a list of transaction bundles, based on the query parameters passed in the request. This list is paginated.
+
+    - [Download bundle file](<#section/Overview/Payout of transactions/Downloading transaction bundle files>): Downloads a CAMT.053 file of a specific bundle.
+
+    ## Step 11 - Set up a transactions subscription
+
+    To receive notifications when a transactions bundle is paid, set up a subscription using: [POST Transactions Subscription](#operation/subscribeTransactionsNotifications).
+
+    HTTP post requests will be made to the specified `url`, containing information about the transactions bundle in the body of the request.
+
+    ## Step 12 - To cancel a transactions subscription
+
+    To cancel a subscription and stop receiving notifications, execute: [DELETE Transactions Subscription](#operation/deleteTransactionsNotifications).
+
+    # Release notes
+
+    ## Version 2.1.2
+    - Added CAMT.053 file format to transaction bundles.
+
+    ## Version 2.1.1
+    - Removed duplicate Transaction bundle entry.
+
+    ## Version 2.1.0
+    - Added the transaction details module. It is now possible to retrieve bundles payout transaction bundles, and subscribe to notifications when a bundle is available.
+
+    Operations added in this release:
+    - GET /transactionbundles
+    - GET /transactionbundles/{bundleId}
+    - POST /transactionssubscription
+    - DELETE /transactionssubscription
+
+    ## Version 2.0.1
+    - Added referenceId format details.
+
+    ## Version 2.0.0
+    - Released this API.
+
+  x-apiType: open
+servers:
+  - url: https://api.abnamro.com/v2/tikkie
+  - url: https://api-sandbox.abnamro.com/v2/tikkie
+security:
+  - ApiKeyAuth: []
+tags:
+  - name: Payment request
+    description: Requests to receive a payment. This API generates a link that is sent to the payer.
+  - name: Payment
+    description: Payment requests can have one or more payments. These are individual transactions.
+  - name: Refund
+    description: Payments can use one or more refunds to pay back a customer.
+  - name: Payment request notification
+    description: This API uses notification subscriptions to inform users when payments or refunds are completed.
+  - name: Sandbox app
+    description: An application created in the sandbox environment that is used to experiment and test API operations.
+  - name: Transaction bundle
+    description: A file containing details of all transactions which occurred during that day.
+  - name: Transactions notification
+    description: This API uses notification subscriptions to inform users when bundled payout files are available.
+paths:
+  /paymentrequests:
+    post:
+      description: |-
+        Creates a payment request. The application must have payment request permission to complete this request.
+
+        For more information, see [App token](#section/Overview/App-token).
+
+      summary: Create a payment request
+      operationId: createPaymentRequest
+      tags:
+        - Payment request
+      parameters:
+        - $ref: "#/components/parameters/appToken"
+      requestBody:
+        $ref: "#/components/requestBodies/PaymentRequestCreationRequest"
+      responses:
+        '201':
+          $ref: "#/components/responses/createPaymentRequestSuccess"
+        '400':
+          $ref: "#/components/responses/InvalidPaymentRequestCreationRequestErrors"
+        '401':
+          $ref: "#/components/responses/InvalidAccessTokenErrors"
+        '403':
+          $ref: "#/components/responses/PaymentRequestForbiddenErrors"
+        '500':
+          $ref: "#/components/responses/ServerErrors"
+    get:
+      description: |-
+        Retrieves a list of payment requests based on the parameters that are provided. The application must have payment request permission to complete this request.
+
+        For more information, see [App token](#section/Overview/App-token).
+
+      summary: Retrieves all payment requests
+      operationId: getPaymentRequestList
+      tags:
+        - Payment request
+      parameters:
+        - $ref: "#/components/parameters/appToken"
+        - $ref: "#/components/parameters/pageNumber"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/fromDateTime"
+        - $ref: "#/components/parameters/toDateTime"
+      responses:
+        '200':
+          $ref: "#/components/responses/getPaymentRequestListSuccess"
+        '400':
+          $ref: "#/components/responses/InvalidPaymentRequestListErrors"
+        '401':
+          $ref: "#/components/responses/InvalidAccessTokenErrors"
+        '403':
+          $ref: "#/components/responses/PaymentRequestForbiddenErrors"
+        '500':
+          $ref: "#/components/responses/ServerErrors"
+  /paymentrequestssubscription:
+    post:
+      description: |-
+        Subscribes to payment request related notifications. The application must have payment request permission to complete this request.
+
+        For more information, see [App token](#section/Overview/App-token).
+
+      summary: Subscribe to notifications
+      operationId: subscribePaymentRequestNotifications
+      tags:
+        - Payment request notification
+      parameters:
+        - $ref: "#/components/parameters/appToken"
+      requestBody:
+        $ref: "#/components/requestBodies/SubscribeRequest"
+      responses:
+        '201':
+          $ref: "#/components/responses/SubscribeSuccess"
+        '400':
+          $ref: "#/components/responses/InvalidSubscribeRequestErrors"
+        '401':
+          $ref: "#/components/responses/InvalidAccessTokenErrors"
+        '403':
+          $ref: "#/components/responses/PaymentRequestForbiddenErrors"
+        '500':
+          $ref: "#/components/responses/ServerErrors"
+      callbacks:
+        Notification:
+          'notificationUrl':
+            post:
+              requestBody:
+                $ref: "#/components/requestBodies/PaymentRequestNotification"
+              responses:
+                '2XX':
+                  description: "Acknowledgement that a notification has been received."
+    delete:
+      description: |-
+        Deletes a subscription. The application must have payment request permission to complete this request.
+
+        For more information, see [App token](#section/Overview/App-token).
+
+      summary: Delete a subscription
+      operationId: deletePaymentRequestNotifications
+      tags:
+        - Payment request notification
+      parameters:
+        - $ref: "#/components/parameters/appToken"
+      responses:
+        '204':
+          $ref: "#/components/responses/DeleteSuccess"
+        '401':
+          $ref: "#/components/responses/InvalidAccessTokenErrors"
+        '403':
+          $ref: "#/components/responses/PaymentRequestForbiddenErrors"
+        '500':
+          $ref: "#/components/responses/ServerErrors"
+  /paymentrequests/{paymentRequestToken}:
+    get:
+      description: |-
+        Retrieves a specific payment request based on a token value. The application must have payment request permission to complete this request.
+
+        For more information, see [App token](#section/Overview/App-token).
+
+      summary: Retrieves details of a specific payment request
+      operationId: getPaymentRequest
+      tags:
+        - Payment request
+      parameters:
+        - $ref: "#/components/parameters/appToken"
+        - $ref: "#/components/parameters/paymentRequestToken"
+      responses:
+        '200':
+          $ref: "#/components/responses/getPaymentRequestSuccess"
+        '400':
+          $ref: "#/components/responses/InvalidGetPaymentRequestErrors"
+        '401':
+          $ref: "#/components/responses/InvalidAccessTokenErrors"
+        '403':
+          $ref: "#/components/responses/PaymentRequestForbiddenErrors"
+        '404':
+          $ref: "#/components/responses/PaymentRequestNotFoundError"
+        '500':
+          $ref: "#/components/responses/ServerErrors"
+  /paymentrequests/{paymentRequestToken}/payments:
+    get:
+      description: |-
+        Retrieves payments made against a specific payment request based on the parameters that are provided. The application must have payment request permission to complete this request.
+
+        For more information, see [App token](#section/Overview/App-token).
+
+      summary: Retrieves all payments
+      operationId: getPaymentList
+      tags:
+        - Payment
+      parameters:
+        - $ref: "#/components/parameters/appToken"
+        - $ref: "#/components/parameters/paymentRequestToken"
+        - $ref: "#/components/parameters/pageNumber"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/fromDateTime"
+        - $ref: "#/components/parameters/toDateTime"
+        - $ref: "#/components/parameters/includeRefunds"
+      responses:
+        '200':
+          $ref: "#/components/responses/getPaymentListSuccess"
+        '400':
+          $ref: "#/components/responses/InvalidPaymentListErrors"
+        '401':
+          $ref: "#/components/responses/InvalidAccessTokenErrors"
+        '403':
+          $ref: "#/components/responses/PaymentRequestForbiddenErrors"
+        '404':
+          $ref: "#/components/responses/PaymentRequestNotFoundError"
+        '500':
+          $ref: "#/components/responses/ServerErrors"
+  /paymentrequests/{paymentRequestToken}/payments/{paymentToken}:
+    get:
+      description: |-
+        Retrieves details of specific payment based on the token value. The application must have payment request permission to complete this request.
+
+        For more information, see [App token](#section/Overview/App-token).
+
+      summary: Retrieves details of a specific payment
+      operationId: getPayment
+      tags:
+        - Payment
+      parameters:
+        - $ref: "#/components/parameters/appToken"
+        - $ref: "#/components/parameters/paymentRequestToken"
+        - $ref: "#/components/parameters/paymentToken"
+      responses:
+        '200':
+          $ref: "#/components/responses/getPaymentSuccess"
+        '400':
+          $ref: "#/components/responses/InvalidGetPaymentErrors"
+        '401':
+          $ref: "#/components/responses/InvalidAccessTokenErrors"
+        '403':
+          $ref: "#/components/responses/PaymentRequestForbiddenErrors"
+        '404':
+          $ref: "#/components/responses/PaymentNotFoundError"
+        '500':
+          $ref: "#/components/responses/ServerErrors"
+  /paymentrequests/{paymentRequestToken}/payments/{paymentToken}/refunds:
+    post:
+      description: |-
+        Creates a refund for a specific payment. The maximum amount which can be refunded for a payment is the amount paid plus €25.00.
+        The application must have payment request permission and the refund permission to complete this request.
+
+        For more information, see [App token](#section/Overview/App-token).
+
+      summary: Create a refund on a payment
+      operationId: createRefund
+      tags:
+        - Refund
+      parameters:
+        - $ref: "#/components/parameters/appToken"
+        - $ref: "#/components/parameters/paymentRequestToken"
+        - $ref: "#/components/parameters/paymentToken"
+      requestBody:
+        $ref: "#/components/requestBodies/RefundRequest"
+      responses:
+        '201':
+          $ref: "#/components/responses/createRefundSuccess"
+        '400':
+          $ref: "#/components/responses/InvalidRefundRequestErrors"
+        '401':
+          $ref: "#/components/responses/InvalidAccessTokenErrors"
+        '403':
+          $ref: "#/components/responses/RefundForbiddenErrors"
+        '404':
+          $ref: "#/components/responses/PaymentNotFoundError"
+        '500':
+          $ref: "#/components/responses/ServerErrors"
+  /paymentrequests/{paymentRequestToken}/payments/{paymentToken}/refunds/{refundToken}:
+    get:
+      description: |-
+        Retrieves details of a specific refund based on a token value. The application must have payment request permission to complete this request.
+
+        For more information, see [App token](#section/Overview/App-token).
+
+      summary: Retrieves details of a specific refund
+      operationId: getRefund
+      tags:
+        - Refund
+      parameters:
+        - $ref: "#/components/parameters/appToken"
+        - $ref: "#/components/parameters/paymentRequestToken"
+        - $ref: "#/components/parameters/paymentToken"
+        - $ref: "#/components/parameters/refundToken"
+      responses:
+        '200':
+          $ref: "#/components/responses/getRefundSuccess"
+        '400':
+          $ref: "#/components/responses/InvalidGetRefundErrors"
+        '401':
+          $ref: "#/components/responses/InvalidAccessTokenErrors"
+        '403':
+          $ref: "#/components/responses/PaymentRequestForbiddenErrors"
+        '404':
+          $ref: "#/components/responses/RefundNotFoundError"
+        '500':
+          $ref: "#/components/responses/ServerErrors"
+  /sandboxapps:
+    post:
+      description: Creates an app in the sandbox for you to use with this API. This operation does not work in the production environment.
+      summary: Create application in the sandbox
+      operationId: createSandboxApp
+      tags:
+        - Sandbox app
+      responses:
+        '200':
+          $ref: "#/components/responses/createSandboxAppSuccess"
+        '500':
+          $ref: "#/components/responses/ServerErrors"
+  /transactionbundles:
+    get:
+      description: |-
+        Retrieves a list of bundles based on the parameters that are provided. The application must have transactions permission to complete this request.
+
+        For more information, see [App token](#section/Overview/App-token).
+      summary: Retrieves all bundles
+      operationId: getBundleList
+      tags:
+        - Transaction bundle
+      parameters:
+        - $ref: "#/components/parameters/appToken"
+        - $ref: "#/components/parameters/pageNumber"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/fromDateTime"
+        - $ref: "#/components/parameters/toDateTime"
+      responses:
+        '200':
+          $ref: "#/components/responses/getBundleListSuccess"
+        '400':
+          $ref: "#/components/responses/InvalidBundleListErrors"
+        '401':
+          $ref: "#/components/responses/InvalidAccessTokenErrors"
+        '403':
+          $ref: "#/components/responses/TransactionsForbiddenErrors"
+        '500':
+          $ref: "#/components/responses/ServerErrors"
+  /transactionbundles/{bundleId}:
+    get:
+      description: |-
+        Retrieves a specific bundle based on a bundle identifier. The application must have transactions permission to complete this request.
+
+        For more information, see [App token](#section/Overview/App-token).
+
+      summary: Retrieves details of a specific bundle
+      operationId: getBundle
+      tags:
+        - Transaction bundle
+      parameters:
+        - $ref: "#/components/parameters/appToken"
+        - $ref: "#/components/parameters/bundleId"
+      responses:
+        '200':
+          $ref: "#/components/responses/getBundleSuccess"
+        '400':
+          $ref: "#/components/responses/InvalidGetBundleErrors"
+        '401':
+          $ref: "#/components/responses/InvalidAccessTokenErrors"
+        '403':
+          $ref: "#/components/responses/TransactionsForbiddenErrors"
+        '404':
+          $ref: "#/components/responses/BundleNotFoundError"
+        '500':
+          $ref: "#/components/responses/ServerErrors"
+  /transactionssubscription:
+    post:
+      description: |-
+        Subscribes to transactions related notifications. The application must have transactions permission to complete this request.
+
+        For more information, see [App token](#section/Overview/App-token).
+
+      summary: Subscribe to notifications
+      operationId: subscribeTransactionsNotifications
+      tags:
+        - Transactions notification
+      parameters:
+        - $ref: "#/components/parameters/appToken"
+      requestBody:
+        $ref: "#/components/requestBodies/SubscribeRequest"
+      responses:
+        '201':
+          $ref: "#/components/responses/SubscribeSuccess"
+        '400':
+          $ref: "#/components/responses/InvalidSubscribeRequestErrors"
+        '401':
+          $ref: "#/components/responses/InvalidAccessTokenErrors"
+        '403':
+          $ref: "#/components/responses/TransactionsForbiddenErrors"
+        '500':
+          $ref: "#/components/responses/ServerErrors"
+      callbacks:
+        Notification:
+          'notificationUrl':
+            post:
+              requestBody:
+                $ref: "#/components/requestBodies/TransactionsNotification"
+              responses:
+                '2XX':
+                  description: "Acknowledgement that a notification has been received."
+    delete:
+      description: |-
+        Deletes a subscription. The application must have transactions permission to complete this request.
+
+        For more information, see [App token](#section/Overview/App-token).
+
+      summary: Delete a subscription
+      operationId: deleteTransactionsNotifications
+      tags:
+        - Transactions notification
+      parameters:
+        - $ref: "#/components/parameters/appToken"
+      responses:
+        '204':
+          $ref: "#/components/responses/DeleteSuccess"
+        '401':
+          $ref: "#/components/responses/InvalidAccessTokenErrors"
+        '403':
+          $ref: "#/components/responses/TransactionsForbiddenErrors"
+        '500':
+          $ref: "#/components/responses/ServerErrors"
+components:
+##################################### SECURITYSCHEMES #############################
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: API-Key
+      description: "An API-Key is a consumer key, which is obtained after app registration on the ABN developer portal."
+##################################### REQUESTBODIES ###############################
+  requestBodies:
+    PaymentRequestCreationRequest:
+      description: "Details of the payment request that you are creating."
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PaymentRequestCreationRequest'
+    RefundRequest:
+      description: "Details of the refund request that you are creating."
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RefundRequest'
+    SubscribeRequest:
+      description: "Details of the URL on which you want to receive notifications per webhook."
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SubscribeRequest'
+    PaymentRequestNotification:
+      description: "The details of the payment request notification."
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Notification'
+    TransactionsNotification:
+      description: "The details of the transactions notification."
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Notification'
+##################################### RESPONSES ###################################
+  responses:
+    createPaymentRequestSuccess:
+      description: Payment request created.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PaymentRequestCreationResponse"
+    getPaymentRequestListSuccess:
+      description: A list of payment requests.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              paymentRequests:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PaymentRequest"
+                minItems: 0
+                maxItems: 50
+                description: Payment requests
+              totalElementCount:
+                type: integer
+                format: "int32"
+                description: "Total amount of payment requests which match the parameters provided."
+                example: 75
+    getPaymentRequestSuccess:
+      description: The specific payment request.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PaymentRequest"
+    getPaymentListSuccess:
+      description: List of payments relating to a payment request.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              payments:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Payment"
+                minItems: 0
+                maxItems: 50
+                description: Payments
+              totalElementCount:
+                type: integer
+                format: "int32"
+                description: "Total amount of payments which match the parameters provided."
+                example: 75
+    SubscribeSuccess:
+      description: 'Subscription successfully created.'
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              subscriptionId:
+                type: string
+                format: uuid
+                description: "Unique identifier for a subscription. This will be sent with the user's payment request notification."
+                example: e0111835-e8df-4070-874a-f12cf3f77e39
+    DeleteSuccess:
+      description: 'Subscription successfully removed.'
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+    getPaymentSuccess:
+      description: Specific payment associated with a payment request.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Payment"
+    createRefundSuccess:
+      description: Refund request created.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Refund"
+    getRefundSuccess:
+      description: A specific refund.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Refund"
+    createSandboxAppSuccess:
+      description: Sandbox app created.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SandboxApp"
+    getBundleListSuccess:
+      description: A list of bundles.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              bundles:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TransactionBundle"
+                minItems: 0
+                maxItems: 50
+                description: Bundles
+              totalElementCount:
+                type: integer
+                format: "int32"
+                description: "Total amount of bundles which match the parameters provided."
+                example: 75
+    getBundleSuccess:
+      description: A specific bundle.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/TransactionBundle"
+    InvalidPaymentRequestCreationRequestErrors:
+      description: |
+        Missing or invalid parameters.
+
+        Detailed error list:
+          ---
+          - DESCRIPTION_MISSING
+            > `description` was not supplied in the request.
+          - DESCRIPTION_MAX_LENGTH_EXCEEDED
+            > `description` exceeds the maximum permitted length.
+          - AMOUNT_IN_CENTS_INVALID
+            > `amountInCents` is in an invalid format.
+          - EXPIRY_DATE_INVALID
+            > `expiryDate` is in an invalid format.
+          - EXPIRY_DATE_NOT_ALLOWED
+            > `expiryDate` is invalid. This date has already passed.
+          - REFERENCE_ID_INVALID
+            > `referenceId` is in an invalid format.
+          - PAYMENT_REQUEST_MAX_AMOUNT_EXCEEDED
+            > `amountInCents` is above the permitted threshold for this organization.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Errors"
+          example:
+            errors:
+              - code: DESCRIPTION_MISSING
+                message: 'description was not supplied in the request.'
+                reference: "https://developer.abnamro.com"
+                status: 400
+                traceId: 5e332871-7f05-4de6-975e-27de0a369629
+    InvalidPaymentRequestListErrors:
+      description: |
+        Missing or invalid parameters.
+
+        Detailed error list:
+          ---
+          - PAGE_NUMBER_MISSING
+            > `pageNumber` was not supplied in the query.
+          - PAGE_SIZE_MISSING
+            > `pageSize` was not supplied in the query.
+          - FROM_DATE_TIME_INVALID
+            > `fromDateTime` is in an invalid format.
+          - TO_DATE_TIME_INVALID
+            > `toDateTime` is in an invalid format.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Errors"
+          example:
+            errors:
+              - code: PAGE_NUMBER_MISSING
+                message: 'pageNumber was not supplied in the query.'
+                reference: "https://developer.abnamro.com"
+                status: 400
+                traceId: 5e332871-7f05-4de6-975e-27de0a369629
+    InvalidSubscribeRequestErrors:
+      description: |
+        Missing or invalid parameters.
+
+        Detailed error list:
+          ---
+          - URL_MISSING
+            > `url` was not supplied in the request.
+          - URL_INVALID
+            > `url` is in an invalid format.
+          - URL_DISALLOWED
+            > It is prohibited to use this `url` for webhooks.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Errors"
+          example:
+            errors:
+              - code: URL_MISSING
+                message: 'url was not supplied in the request.'
+                reference: "https://developer.abnamro.com"
+                status: 400
+                traceId: 5e332871-7f05-4de6-975e-27de0a369629
+    InvalidGetPaymentRequestErrors:
+      description: |
+        Missing or invalid parameters.
+
+        Detailed error list:
+          ---
+          - PAYMENT_REQUEST_TOKEN_INVALID
+            > `paymentRequestToken` is in an invalid format.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Errors"
+          example:
+            errors:
+              - code: PAYMENT_REQUEST_TOKEN_INVALID
+                message: 'paymentRequestToken is in an invalid format.'
+                reference: "https://developer.abnamro.com"
+                status: 400
+                traceId: 5e332871-7f05-4de6-975e-27de0a369629
+    InvalidPaymentListErrors:
+      description: |
+        Missing or invalid parameters.
+
+        Detailed error list:
+          ---
+          - PAYMENT_REQUEST_TOKEN_INVALID
+            > `paymentRequestToken` is in an invalid format.
+          - PAGE_NUMBER_MISSING
+            > `pageNumber` was not supplied in the query.
+          - PAGE_SIZE_MISSING
+            > `pageSize` was not supplied in the query.
+          - FROM_DATE_TIME_INVALID
+            > `fromDateTime` is in an invalid format.
+          - TO_DATE_TIME_INVALID
+            > `toDateTime` is in an invalid format.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Errors"
+          example:
+            errors:
+              - code: PAGE_NUMBER_MISSING
+                message: 'pageNumber was not supplied in the query.'
+                reference: "https://developer.abnamro.com"
+                status: 400
+                traceId: 5e332871-7f05-4de6-975e-27de0a369629
+    InvalidGetPaymentErrors:
+      description: |
+        Missing or invalid parameters.
+
+        Detailed error list:
+          ---
+          - PAYMENT_REQUEST_TOKEN_INVALID
+            > `paymentRequestToken` is in an invalid format.
+          - PAYMENT_TOKEN_INVALID
+            > `paymentToken` is in an invalid format.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Errors"
+          example:
+            errors:
+              - code: PAYMENT_TOKEN_INVALID
+                message: 'paymentToken is in an invalid format.'
+                reference: "https://developer.abnamro.com"
+                status: 400
+                traceId: 5e332871-7f05-4de6-975e-27de0a369629
+    InvalidRefundRequestErrors:
+      description: |
+        Missing or invalid parameters.
+
+        Detailed error list:
+          ---
+          - PAYMENT_REQUEST_TOKEN_INVALID
+            > `paymentRequestToken` is in an invalid format.
+          - PAYMENT_TOKEN_INVALID
+            > `paymentToken` is in an invalid format.
+          - DESCRIPTION_MISSING
+            > `description` was not supplied in the request.
+          - DESCRIPTION_MAX_LENGTH_EXCEEDED
+            > `description` exceeds the maximum permitted length.
+          - AMOUNT_IN_CENTS_MISSING
+            > `amountInCents` was not supplied in the request.
+          - AMOUNT_IN_CENTS_INVALID
+            > `amountInCents` is in an invalid format.
+          - REFERENCE_ID_INVALID
+            > `referenceId` is in an invalid format.
+          - REFUND_AMOUNT_IS_TOO_HIGH
+            > The total refund amount is larger than the payment, plus €25.00.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Errors"
+          example:
+            errors:
+              - code: DESCRIPTION_MISSING
+                message: 'Missing the description in the request'
+                reference: "https://developer.abnamro.com"
+                status: 400
+                traceId: 5e332871-7f05-4de6-975e-27de0a369629
+    InvalidGetRefundErrors:
+      description: |
+        Missing or invalid parameters.
+
+        Detailed error list:
+          ---
+          - PAYMENT_REQUEST_TOKEN_INVALID
+            > `paymentRequestToken` is in an invalid format.
+          - PAYMENT_TOKEN_INVALID
+            > `paymentToken` is in an invalid format.
+          - REFUND_TOKEN_INVALID
+            > `refundToken` is in an invalid format.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Errors"
+          example:
+            errors:
+              - code: REFUND_TOKEN_INVALID
+                message: 'refundToken is in an invalid format.'
+                reference: "https://developer.abnamro.com"
+                status: 400
+                traceId: 5e332871-7f05-4de6-975e-27de0a369629
+    InvalidBundleListErrors:
+      description: |
+        Missing or Invalid Parameters
+
+        Detailed error list:
+          ---
+          - PAGE_NUMBER_MISSING
+            > `pageNumber` was not supplied in the query.
+          - PAGE_SIZE_MISSING
+            > `pageSize` was not supplied in the query.
+          - FROM_DATE_TIME_INVALID
+            > `fromDateTime` is in an invalid format.
+          - TO_DATE_TIME_INVALID
+            > `toDateTime` is in an invalid format.
+          - TIME_RANGE_INVALID
+            > `toDateTime` is greater than `fromDateTime`.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Errors"
+          example:
+            errors:
+              - code: PAGE_NUMBER_MISSING
+                message: 'pageNumber was not supplied in the query.'
+                reference: "https://developer.abnamro.com"
+                status: 400
+                traceId: 5e332871-7f05-4de6-975e-27de0a369629
+    InvalidGetBundleErrors:
+      description: |
+        Missing or invalid parameters
+
+        Detailed error list:
+          ---
+          - BUNDLE_ID_INVALID
+            > `bundleId` is in an invalid format.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Errors"
+          example:
+            errors:
+              - code: BUNDLE_ID_INVALID
+                message: 'bundleId is in an invalid format.'
+                reference: "https://developer.abnamro.com"
+                status: 400
+                traceId: 5e332871-7f05-4de6-975e-27de0a369629
+    InvalidAccessTokenErrors:
+      description: |
+        Access denied.
+
+        Detailed error list:
+          ---
+          - APP_TOKEN_INVALID
+            > `appToken` is in an invalid format.
+          - APP_TOKEN_ALREADY_IN_USE
+            > This `appToken` has already been used with another API Key.
+          - APP_TOKEN_DISABLED
+            > `appToken` disabled.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Errors"
+          example:
+            errors:
+              - code: APP_TOKEN_INVALID
+                message: 'appToken is in an invalid format.'
+                reference: "https://developer.abnamro.com"
+                status: 401
+                traceId: 5e332871-7f05-4de6-975e-27de0a369629
+    PaymentRequestForbiddenErrors:
+      description: |
+        Forbidden
+
+        Detailed error list:
+          ---
+          - PAYMENT_REQUEST_FORBIDDEN
+            > `appToken` does not have permission to create or get payment requests.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Errors"
+          example:
+            errors:
+              - code: PAYMENT_REQUEST_FORBIDDEN
+                message: 'appToken does not have permission to create or get payment requests.'
+                reference: "https://developer.abnamro.com"
+                status: 403
+                traceId: 5e332871-7f05-4de6-975e-27de0a369629
+    RefundForbiddenErrors:
+      description: |
+        Forbidden
+
+        Detailed error list:
+          ---
+          - PAYMENT_REQUEST_FORBIDDEN
+            > `appToken` does not have permission to create or get payment requests.
+          - REFUND_FORBIDDEN
+            > `appToken` does not have permission to create refunds.
+          - BUNDLED_PAYOUT_NOT_ENABLED
+            > This organization does not have bundled payout enabled, which is a prerequisite to create a refund. To enable bundled payout, contact Tikkie Business Support.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Errors"
+          example:
+            errors:
+              - code: REFUND_FORBIDDEN
+                message: 'appToken does not have permission to create refunds.'
+                reference: "https://developer.abnamro.com"
+                status: 403
+                traceId: 5e332871-7f05-4de6-975e-27de0a369629
+    TransactionsForbiddenErrors:
+      description: |
+        Forbidden
+
+        Detailed error list:
+          ---
+          - TRANSACTIONS_FORBIDDEN
+            > `appToken` does not have permission to retrieve transactions.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Errors"
+          example:
+            errors:
+              - code: TRANSACTIONS_FORBIDDEN
+                message: 'appToken does not have permission to retrieve transactions.'
+                reference: "https://developer.abnamro.com"
+                status: 403
+                traceId: 5e332871-7f05-4de6-975e-27de0a369629
+    PaymentRequestNotFoundError:
+      description: |
+        Not found.
+
+        Detailed error list:
+          ---
+          - PAYMENT_REQUEST_NOT_FOUND
+            > No payment request was found for the specified `paymentRequestToken`.
+
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Errors"
+          example:
+            errors:
+              - code: PAYMENT_REQUEST_NOT_FOUND
+                message: 'No payment request was found for the specified paymentRequestToken.'
+                reference: "https://developer.abnamro.com"
+                status: 404
+                traceId: 5e332871-7f05-4de6-975e-27de0a369629
+    PaymentNotFoundError:
+      description: |
+        Not found.
+
+        Detailed error list:
+          ---
+          - PAYMENT_REQUEST_NOT_FOUND
+            > No payment request was found for the specified `paymentRequestToken`.
+          - PAYMENT_NOT_FOUND
+            > No payment was found for the specified `paymentToken`.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Errors"
+          example:
+            errors:
+              - code: PAYMENT_NOT_FOUND
+                message: 'No payment was found for the specified paymentToken.'
+                reference: "https://developer.abnamro.com"
+                status: 404
+                traceId: 5e332871-7f05-4de6-975e-27de0a369629
+    RefundNotFoundError:
+      description: |
+        Not found.
+
+        Detailed error list:
+          ---
+          - PAYMENT_REQUEST_NOT_FOUND
+            > No payment request was found for the specified `paymentRequestToken`.
+          - PAYMENT_NOT_FOUND
+            > No payment was found for the specified `paymentToken`.
+          - REFUND_NOT_FOUND
+            > No refund was found for the specified `refundToken`.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Errors"
+          example:
+            errors:
+              - code: REFUND_NOT_FOUND
+                message: 'No refund was found for the specified refundToken.'
+                reference: "https://developer.abnamro.com"
+                status: 404
+                traceId: 5e332871-7f05-4de6-975e-27de0a369629
+    BundleNotFoundError:
+      description: |
+        Not found
+
+        Detailed error list:
+          ---
+          - BUNDLE_NOT_FOUND
+            > No bundle was found for the specified `bundleId`.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Errors"
+          example:
+            errors:
+              - code: BUNDLE_NOT_FOUND
+                message: 'No bundle was found for the specified bundleId.'
+                reference: "https://developer.abnamro.com"
+                status: 404
+                traceId: 5e332871-7f05-4de6-975e-27de0a369629
+    ServerErrors:
+      description: |
+        Internal server error.
+
+        Detailed error list:
+          ---
+          - INTERNAL_SERVER_ERROR
+            > An unknown error occurred.
+      headers:
+        'Trace-Id':
+          $ref: "#/components/headers/Trace-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Errors"
+          example:
+            errors:
+              - code: INTERNAL_SERVER_ERROR
+                message: 'Some unknown error occurred'
+                reference: "https://developer.abnamro.com"
+                status: 500
+                traceId: 5e332871-7f05-4de6-975e-27de0a369629
+##################################### PARAMETERS ##################################
+  parameters:
+    appToken:
+      in: header
+      name: X-App-Token
+      description: "`appToken` generated in the Tikkie Business Portal."
+      required: true
+      schema:
+        type: string
+        format: uuid
+      example: 'aaaaaaaa-1111-bbbb-2222-cccccccccccc'
+    paymentRequestToken:
+      name: paymentRequestToken
+      in: path
+      required: true
+      description: "Token identifying the payment request."
+      schema:
+        type: string
+      example: 'qzdnzr8hnVWTgXXcFRLUMc'
+    paymentToken:
+      name: paymentToken
+      in: path
+      required: true
+      description: Token identifying one payment of a payment request.
+      schema:
+        type: string
+        format: uuid
+      example: '21ef7413-cc3c-4c80-9272-6710fada28e4'
+    refundToken:
+      name: refundToken
+      in: path
+      required: true
+      description: Token identifying one refund of a payment.
+      schema:
+        type: string
+      example: 'abcdzr8hnVWTgXXcFRLUMc'
+    pageSize:
+      in: query
+      name: pageSize
+      description: Number of items on a page.
+      required: true
+      schema:
+        minimum: 1
+        maximum: 50
+        type: integer
+        format: "int32"
+      example: 10
+    pageNumber:
+      in: query
+      name: pageNumber
+      description: Number of the page to be returned.
+      required: true
+      schema:
+        type: integer
+        format: "int32"
+      example: 2
+    fromDateTime:
+      in: query
+      name: fromDateTime
+      description: "Point in time where you start searching for items. Format: YYYY-MM-DD:HH:mm:ss.SSSZ"
+      required: false
+      schema:
+        type: string
+        format: date-time
+      example: "2020-02-04T18:00:00.000Z"
+    toDateTime:
+      in: query
+      name: toDateTime
+      description: "Point in time where you stop searching for items. Format: YYYY-MM-DD:HH:mm:ss.SSSZ."
+      required: false
+      schema:
+        type: string
+        format: date-time
+      example: "2020-03-03T15:00:00.000Z"
+    includeRefunds:
+      in: query
+      name: includeRefunds
+      description: Includes refunds in the response.
+      required: false
+      schema:
+        type: boolean
+        default: true
+      example: false
+    bundleId:
+      name: bundleId
+      in: path
+      required: true
+      description: "Identifier for the bundle."
+      schema:
+        type: string
+        format: uuid
+      example: 'af8fa035-3275-44fc-9a9b-a38c02efa114'
+##################################### HEADERS #####################################
+  headers:
+    Trace-Id:
+      schema:
+        type: string
+        format: uuid
+      description: A unique identifier for the request.
+      example: '2409b949-cefd-4208-bd37-f805a79b8075'
+##################################### SCHEMAS #####################################
+  schemas:
+    PaymentRequestCreationRequest:
+      type: object
+      required:
+        - description
+      properties:
+        amountInCents:
+          type: integer
+          format: "int32"
+          example: 1500
+          description: 'Amount in cents of the payment request (euros). If this value is not specified, an open payment request will be created.'
+        description:
+          type: string
+          example: 'Invoice 1815'
+          description: 'Description of the payment request, which the payer or payers will see.'
+          maxLength: 35
+        expiryDate:
+          type: string
+          format: date
+          example: '2020-02-04'
+          description: 'Date after which the payment request will expire and cannot be paid. Format is yyyy-mm-dd.'
+        referenceId:
+          type: string
+          pattern: "^[a-zA-Z0-9!&'()+-./:?_`, ]{1,35}$"
+          example: 'inv_1815'
+          description: 'ID for the reference of the API consumer.'
+          maxLength: 35
+    PaymentRequestCreationResponse:
+      type: object
+      properties:
+        paymentRequestToken:
+          type: string
+          example: 'qzdnzr8hnVWTgXXcFRLUMc'
+          description: 'Unique token identifying this payment request, which is later used when retrieving details.'
+        url:
+          type: string
+          example: 'https://tikkie.me/pay/Tikkie/qzdnzr8hnVWTgXXcFRLUMc'
+          description: 'URL where the payment request can be paid.'
+        amountInCents:
+          type: integer
+          format: "int32"
+          example: 1500
+          description: 'Amount in cents to be paid (euros).'
+        description:
+          type: string
+          example: 'Invoice 1815'
+          description: 'Description of the payment request, which the payer or payers will see.'
+          maxLength: 35
+        referenceId:
+          type: string
+          pattern: "^[a-zA-Z0-9!&'()+-./:?_`, ]{1,35}$"
+          example: 'inv_1815'
+          description: 'ID for the reference of the API consumer.'
+          maxLength: 35
+        createdDateTime:
+          type: string
+          format: date-time
+          example: '2019-09-09T12:34:56.000Z'
+          description: 'Timestamp when the payment request was created. Format: YYYY-MM-DD:HH:mm:ss.SSSZ.'
+        expiryDate:
+          type: string
+          format: date
+          example: '2020-03-03'
+          description: 'Date after the payment request will expire. Format: YYYY-MM-DD.'
+        status:
+          type: string
+          enum: ['OPEN', 'CLOSED', 'EXPIRED', 'MAX_YIELD_REACHED', 'MAX_SUCCESSFUL_PAYMENTS_REACHED']
+          description: |
+            Status of the payment request
+
+            Status description:
+              ---
+              - OPEN
+                > A payment request is open and ready to be paid.
+              - CLOSED
+                > A payment request is closed.
+              - EXPIRED
+                > A payment request has expired.
+              - MAX_YIELD_REACHED
+                > The payment request has reached its maximum amount in euro. This limit is dependent on the maximum agreed amount.
+              - MAX_SUCCESSFUL_PAYMENTS_REACHED
+                > The payment request has reached its maximum amount of payments. The maximum amount of payments per request can be either set to one or unlimited.
+          example: 'OPEN'
+    SubscribeRequest:
+      type: object
+      required:
+        - url
+      properties:
+        url:
+          type: string
+          example: 'https://www.example.com/notification'
+          description: 'URL where notifications must be sent using a webhook or callback.'
+    PaymentRequest:
+      allOf:
+        - $ref: "#/components/schemas/PaymentRequestCreationResponse"
+        - type: object
+          properties:
+            numberOfPayments:
+              type: integer
+              format: "int32"
+              example: 2
+              description: 'Number of payments which have been collected on this payment request.'
+            totalAmountPaidInCents:
+              type: integer
+              example: 3000
+              format: "int64"
+              description: 'Total amount, in cents, which has been collected on this payment request'
+    Notification:
+      oneOf:
+        - $ref: "#/components/schemas/PaymentNotification"
+        - $ref: "#/components/schemas/RefundNotification"
+        - $ref: "#/components/schemas/BundledPayoutNotification"
+      discriminator:
+        propertyName: notificationType
+      example:
+        paymentRequestToken: 'qzdnzr8hnVWTgXXcFRLUMc'
+        paymentToken: '21ef7413-cc3c-4c80-9272-6710fada28e4'
+    BaseNotification:
+      type: object
+      required:
+        - subscriptionId
+        - notificationType
+      properties:
+        subscriptionId:
+          type: string
+          example: 'e0111835-e8df-4070-874a-f12cf3f77e39'
+          description: 'Unique ID that identifies a subscription that has sent a notification.'
+        notificationType:
+          type: string
+          enum: ['PAYMENT', 'REFUND', 'BUNDLE']
+          example: 'PAYMENT'
+          description: |
+            Type of notification.
+
+            Description:
+              ---
+              - PAYMENT
+                > Payment notification.
+              - REFUND
+                > Refund notification.
+              - BUNDLE
+                > Bundle notification.
+    PaymentNotification:
+      allOf:
+        - $ref: "#/components/schemas/BaseNotification"
+        - type: object
+          required:
+            - paymentRequestToken
+            - paymentToken
+          properties:
+            paymentRequestToken:
+              type: string
+              example: 'qzdnzr8hnVWTgXXcFRLUMc'
+              description: 'Unique token identifying this payment request.'
+            paymentToken:
+              type: string
+              example: '21ef7413-cc3c-4c80-9272-6710fada28e4'
+              description: 'Unique token identifying this payment.'
+    RefundNotification:
+      allOf:
+        - $ref: "#/components/schemas/PaymentNotification"
+        - type: object
+          required:
+            - refundToken
+          properties:
+            refundToken:
+              type: string
+              example: 'abcdzr8hnVWTgXXcFRLUMc'
+              description: 'Unique token identifying this refund.'
+    BundledPayoutNotification:
+      allOf:
+        - $ref: "#/components/schemas/BaseNotification"
+        - type: object
+          required:
+            - bundleId
+          properties:
+            bundleId:
+              type: string
+              format: uuid
+              description: 'Unique identifier for this bundle.'
+              example: 'af8fa035-3275-44fc-9a9b-a38c02efa114'
+    Payment:
+      type: object
+      properties:
+        paymentToken:
+          type: string
+          format: uuid
+          description: 'Unique token identifying this payment.'
+          example: '21ef7413-cc3c-4c80-9272-6710fada28e4'
+        tikkieId:
+          type: string
+          example: '000012345678'
+          description: 'Unique ID identifying this payment. This will be displayed on the payers statement.'
+        counterPartyName:
+          type: string
+          example: 'E. Xample'
+          description: 'Name of the payer.'
+        counterPartyAccountNumber:
+          type: string
+          example: 'NL01ABNA1234567890'
+          description: 'IBAN of the payer.'
+        amountInCents:
+          type: integer
+          example: 1500
+          format: "int32"
+          description: 'Amount, in cents, which was paid (euros).'
+        description:
+          type: string
+          example: 'Invoice 1815'
+          description: 'Description of the payment request, which the payer or payers will see.'
+          maxLength: 35
+        createdDateTime:
+          type: string
+          format: date-time
+          example: '2019-09-09T12:34:56.000Z'
+          description: 'Timestamp when the payment was created. Format: YYYY-MM-DD:HH:mm:ss.SSSZ.'
+        refunds:
+          type: array
+          description: 'List of refunds performed on this payment.'
+          minItems: 0
+          maxItems: 50
+          items:
+            $ref: '#/components/schemas/Refund'
+    RefundRequest:
+      type: object
+      required:
+        - description
+        - amountInCents
+      properties:
+        amountInCents:
+          type: integer
+          format: "int32"
+          description: 'Amount to refund in cents (euros).'
+          example: 1000
+        description:
+          type: string
+          description: 'Description of the refund.'
+          example: 'Refunded 10.00 for broken product.'
+          maxLength: 35
+        referenceId:
+          type: string
+          pattern: "^[a-zA-Z0-9!&'()+-./:?_`, ]{1,35}$"
+          example: 'inv_1815_ref_1'
+          description: 'ID for the reference of the API consumer.'
+          maxLength: 35
+    Refund:
+      type: object
+      properties:
+        refundToken:
+          type: string
+          description: 'Unique token identifying this refund.'
+          example: 'abcdzr8hnVWTgXXcFRLUMc'
+        amountInCents:
+          type: integer
+          format: "int32"
+          description: 'Amount of the refund in cents (euros).'
+          example: 1000
+        description:
+          type: string
+          description: 'Description of the refund.'
+          example: 'Refunded 10.00 for broken product.'
+          maxLength: 35
+        referenceId:
+          type: string
+          pattern: "^[a-zA-Z0-9!&'()+-./:?_`, ]{1,35}$"
+          example: 'inv_1815_ref_1'
+          description: 'ID for the reference of the API consumer.'
+          maxLength: 35
+        createdDateTime:
+          type: string
+          format: date-time
+          example: '2019-09-09T12:34:56.000Z'
+          description: 'Timestamp when the refund was created. Format: YYYY-MM-DD:HH:mm:ss.SSSZ.'
+        status:
+          type: string
+          enum: ['PENDING', 'PAID']
+          description: |
+            Status of the refund.
+
+            Status Description:
+              ---
+              - PENDING
+                > The refund has been scheduled and will be completed as soon as there is enough money in the account. If there is not enough money in the account on a particular day, the refund will be carried over to the next day, and completed when the amount is available.
+
+                > The refund will remain in a scheduled state indefinitely, until the amount is available and the refund is executed.
+              - PAID
+                > The refund has been paid out.
+          example: 'PAID'
+    SandboxApp:
+      type: object
+      properties:
+        appToken:
+          type: string
+          format: uuid
+          description: '`appToken` to use in other requests.'
+          example: '935059a6-58b3-4f8d-a021-7bdda0d8d6ad'
+    TransactionBundle:
+      type: object
+      properties:
+        bundleId:
+          type: string
+          format: uuid
+          description: 'Unique identifier for this bundle.'
+          example: 'af8fa035-3275-44fc-9a9b-a38c02efa114'
+        reference:
+          type: string
+          description: 'Reference for the bundle, can be matched with details on bank statement.'
+          example: 'B20200101-ABCDE'
+        files:
+          type: array
+          description: 'The files representing these bundles.'
+          minItems: 1
+          maxItems: 5
+          items:
+            $ref: '#/components/schemas/File'
+        startDateTime:
+          type: string
+          format: date-time
+          description: 'Timestamp indicating the start time of the bundle. Format: YYYY-MM-DD:HH:mm:ss.SSSZ.'
+          example: '2019-09-09T00:00:00.000Z'
+        endDateTime:
+          type: string
+          format: date-time
+          description: 'Timestamp indicating the end time of the bundle. Format: YYYY-MM-DD:HH:mm:ss.SSSZ.'
+          example: '2019-09-09T23:59:59.999Z'
+    File:
+      type: object
+      properties:
+        type:
+          type: string
+          description: 'Filetype of the bundle.'
+          example: 'camt053'
+        url:
+          type: string
+          description: 'The link where the file is available for download.'
+          example: 'https://example.com/bundle.xml'
+    Errors:
+      type: object
+      properties:
+        errors:
+          type: array
+          minItems: 1
+          maxItems: 10
+          items:
+            $ref: '#/components/schemas/Error'
+    Error:
+      type: object
+      required:
+        - code
+        - message
+        - status
+      properties:
+        code:
+          type: string
+          example: 'PAYMENT_REQUEST_TOKEN_INVALID'
+          description: Unique error code.
+        message:
+          type: string
+          example: 'paymentRequestToken is in an invalid format.'
+          description: Message describing the error.
+        reference:
+          type: string
+          example: "https://developer.abnamro.com"
+          description: reference to documentation
+        status:
+          type: integer
+          format: "int32"
+          example: 400
+          description: HTTP Status code.
+        traceId:
+          type: string
+          format: "uuid"
+          example: "5e332871-7f05-4de6-975e-27de0a369629"
+          description: Id to trace the request.
