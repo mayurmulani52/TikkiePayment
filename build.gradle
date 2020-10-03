@@ -40,7 +40,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-//	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -61,6 +61,10 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	
 	implementation('com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.3')
+	
+	//Okta dependency jars added
+	implementation('org.springframework.cloud:spring-cloud-starter-oauth2:2.2.4.RELEASE')
+	implementation('com.okta.spring:okta-spring-boot-starter:1.4.0')
 	
 	implementation 'org.json:json:20190722'
 }
