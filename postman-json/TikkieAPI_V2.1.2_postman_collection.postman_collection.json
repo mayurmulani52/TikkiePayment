@@ -1862,7 +1862,7 @@
 							{
 								"description": "(Required) `appToken` generated in the Tikkie Business Portal.",
 								"key": "X-App-Token",
-								"value": "<uuid>"
+								"value": "{{appToken}}"
 							},
 							{
 								"key": "Content-Type",
@@ -1871,7 +1871,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"description\": \"<string>\",\n    \"amountInCents\": \"<integer>\",\n    \"expiryDate\": \"<date>\",\n    \"referenceId\": \"<string>\"\n}",
+							"raw": "{\n    \"description\": \"testing tikkie payment for bbd\",\n    \"amountInCents\": \"1500\",\n    \"expiryDate\": \"2020-12-04\",\n    \"referenceId\": \"inv_1815\"\n}",
 							"options": {
 								"raw": {}
 							}
@@ -3861,15 +3861,71 @@
 		{
 			"name": "Create application in the sandbox",
 			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "82zQNRAzPXBG0Mn1LGnRD9PL6RuGfm6A",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "API-Key",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "82zQNRAzPXBG0Mn1LGnRD9PL6RuGfm6A",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "API-Key",
+						"value": "82zQNRAzPXBG0Mn1LGnRD9PL6RuGfm6A",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "{{baseUrl}}/sandboxapps",
+					"raw": "https://api-sandbox.abnamro.com/v2/tikkie//sandboxapps",
+					"protocol": "https",
 					"host": [
-						"{{baseUrl}}"
+						"api-sandbox",
+						"abnamro",
+						"com"
 					],
 					"path": [
+						"v2",
+						"tikkie",
+						"",
 						"sandboxapps"
+					],
+					"query": [
+						{
+							"key": "apiKey",
+							"value": "82zQNRAzPXBG0Mn1LGnRD9PL6RuGfm6A",
+							"disabled": true
+						},
+						{
+							"key": "api_key",
+							"value": "82zQNRAzPXBG0Mn1LGnRD9PL6RuGfm6A",
+							"disabled": true
+						}
 					]
 				},
 				"description": "Creates an app in the sandbox for you to use with this API. This operation does not work in the production environment."
@@ -3942,12 +3998,38 @@
 			]
 		}
 	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "cb58be71-b950-47e6-9b05-6f3bb000d199",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "466e21d5-020d-4f86-8246-3631f6fc971a",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
 	"variable": [
 		{
-			"id": "baseUrl",
+			"id": "b0ccc34e-becf-4178-91fb-62d01295eaa9",
 			"key": "baseUrl",
-			"value": "https://api.abnamro.com/v2/tikkie",
-			"type": "string"
+			"value": "https://api.abnamro.com/v2/tikkie"
+		},
+		{
+			"id": "6fa59c14-4cbf-4558-a2c5-2f985604b3b7",
+			"key": "apiKey",
+			"value": "82zQNRAzPXBG0Mn1LGnRD9PL6RuGfm6A"
 		}
 	],
 	"protocolProfileBehavior": {}
