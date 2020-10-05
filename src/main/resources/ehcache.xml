@@ -9,7 +9,7 @@
         <key-type>java.lang.String</key-type>
         <value-type>java.lang.String</value-type>
         <expiry>
-            <ttl unit="seconds">36000</ttl>
+            <ttl unit="seconds">36000000</ttl>
         </expiry>
  
         <listeners>

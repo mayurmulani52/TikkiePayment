@@ -1,0 +1,467 @@
+
+openapi: 3.0.0
+info:
+  title: Tikkie Payment Integration APIs
+  description: This is an integration APIs with Tikkie Payment gateway
+  version: 0.0.1
+tags:
+  - name: Tikkie Payment
+    description: Integration APIs with Tikkie API Payment gateway
+paths:
+  /createPaymentRequest:
+    post:
+      tags: 
+        -  Tikkie Payment
+      summary: to create payment request integration with Tikkie Payment gateway 
+      requestBody:
+        $ref: "#/components/requestBodies/CreatePaymentRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatePaymentRequestSuccess'
+        "401":
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: There was an unexpected server error processing the request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+                
+  /getAuditOfpaymentRequests:
+    get:
+      tags: 
+        -  Tikkie Payment
+      summary: to get All the payment Requests
+      parameters:
+        
+        - in: query
+          name: paymentRequestToken
+          schema:
+            type: string
+          description: >-
+            Token identifying the payment request.
+          example: 'qzdnzr8hnVWTgXXcFRLUMc'  
+          required: false
+        
+        - in: query
+          name: email
+          schema:
+            type: string
+          description: >-
+            Token identifying the payment request.
+          example: 'qzdnzr8hnVWTgXXcFRLUMc'  
+          required: false 
+          
+        - in: query
+          name: referenceId
+          schema:
+            type: string
+          description: >-
+            Token identifying the payment request.
+          example: 'qzdnzr8hnVWTgXXcFRLUMc'  
+          required: false   
+          
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: >-
+            Page number of items to start retrieval from.Default value is 1.
+          required: true  
+        - in: query
+          name: size
+          schema:
+            type: integer
+            enum: [5,10,20,50]
+          description: >-
+            Number of reports per page.
+          required: true 
+        - in: query
+          name: fromDateTime
+          description: "Point in time where you start searching for items. Format: YYYY-MM-DD:HH:mm:ss.SSSZ"
+          required: false
+          schema:
+           type: string
+           format: date-time
+          example: "2020-02-04T18:00:00.000Z"
+        - in: query
+          name: toDateTime
+          description: "Point in time where you start searching for items. Format: YYYY-MM-DD:HH:mm:ss.SSSZ"
+          required: false
+          schema:
+           type: string
+           format: date-time
+          example: "2020-02-04T18:00:00.000Z"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getPaymentRequestListSuccess'
+        "401":
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: There was an unexpected server error processing the request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"              
+                
+  /paymentsOfPaymentRequest:
+    get:
+      description: |-
+        Retrieves payments made against a specific payment request based on the parameters that are provided. The application must have payment request permission to complete this request.
+
+        For more information, see [App token](#section/Overview/App-token).
+
+      summary: Retrieves all payments
+      operationId: getPaymentList
+      tags:
+        - Tikkie Payment
+      parameters:
+        
+        - in: query
+          name: paymentRequestToken
+          schema:
+            type: string
+          description: >-
+            Token identifying the payment request.
+          example: 'qzdnzr8hnVWTgXXcFRLUMc'  
+          required: true
+          
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: >-
+            Page number of items to start retrieval from.Default value is 1.
+          required: true  
+        - in: query
+          name: size
+          schema:
+            type: integer
+            enum: [5,10,20,50]
+          description: >-
+            Number of reports per page.
+          required: true 
+        - in: query
+          name: fromDateTime
+          description: "Point in time where you start searching for items. Format: YYYY-MM-DD:HH:mm:ss.SSSZ"
+          required: false
+          schema:
+           type: string
+           format: date-time
+          example: "2020-02-04T18:00:00.000Z"
+        - in: query
+          name: toDateTime
+          description: "Point in time where you start searching for items. Format: YYYY-MM-DD:HH:mm:ss.SSSZ"
+          required: false
+          schema:
+           type: string
+           format: date-time
+          example: "2020-02-04T18:00:00.000Z"  
+              
+      
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getPaymentListSuccess'
+        "401":
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: There was an unexpected server error processing the request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"                 
+
+ 
+servers:
+  - url: 'http://localhost:8081/tikkie-payment' 
+    variables:
+      server:
+        default: http://localhost:8081
+
+components:
+  requestBodies:
+    CreatePaymentRequest:
+      content:
+        application/json:
+          schema:
+            required:
+              - description
+              - email
+              - amountInCents
+              - expiryDate
+              - referenceId
+            properties:
+              email:
+                type: string
+                format: email
+                description: 'user email who is going to create payment request'
+              amountInCents:
+                type: integer
+                format: "int32"
+                example: 1500
+                description: 'Amount in cents of the payment request (euros). If this value is not specified, an open payment request will be created.'
+              description:
+                type: string
+                example: 'Invoice 1815'
+                description: 'Description of the payment request, which the payer or payers will see.'
+                maxLength: 35
+              expiryDate:
+                type: string
+                format: date
+                example: '2020-02-04'
+                description: 'Date after which the payment request will expire and cannot be paid. Format is yyyy-mm-dd.'
+              referenceId:
+                type: string
+                pattern: "^[a-zA-Z0-9!&'()+-./:?_`, ]{1,35}$"
+                example: 'inv_1815'
+                description: 'ID for the reference of the API consumer.'
+                maxLength: 35
+              
+              
+  schemas:
+    ApiError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The HTTP error code.
+        status:
+          type: string
+          description: The HTTP error status
+        message:
+          type: string
+          description: The error message
+        errorId:
+          type: string
+          description: The backend error ID
+    
+    CreatePaymentRequestSuccess:
+      type: object
+      properties:
+        paymentRequestToken:
+          type: string
+          example: 'qzdnzr8hnVWTgXXcFRLUMc'
+          description: 'Unique token identifying this payment request, which is later used when retrieving details.'
+        url:
+          type: string
+          example: 'https://tikkie.me/pay/Tikkie/qzdnzr8hnVWTgXXcFRLUMc'
+          description: 'URL where the payment request can be paid.'
+        amountInCents:
+          type: integer
+          format: "int32"
+          example: 1500
+          description: 'Amount in cents to be paid (euros).'
+        description:
+          type: string
+          example: 'Invoice 1815'
+          description: 'Description of the payment request, which the payer or payers will see.'
+          maxLength: 35
+        referenceId:
+          type: string
+          pattern: "^[a-zA-Z0-9!&'()+-./:?_`, ]{1,35}$"
+          example: 'inv_1815'
+          description: 'ID for the reference of the API consumer.'
+          maxLength: 35
+        createdDateTime:
+          type: string
+          format: date-time
+          example: '2019-09-09T12:34:56.000Z'
+          description: 'Timestamp when the payment request was created. Format: YYYY-MM-DD:HH:mm:ss.SSSZ.'
+        expiryDate:
+          type: string
+          format: date
+          example: '2020-03-03'
+          description: 'Date after the payment request will expire. Format: YYYY-MM-DD.'
+        status:
+          type: string
+          enum: ['OPEN', 'CLOSED', 'EXPIRED', 'MAX_YIELD_REACHED', 'MAX_SUCCESSFUL_PAYMENTS_REACHED']
+          description: |
+            Status of the payment request
+
+            Status description:
+              ---
+              - OPEN
+                > A payment request is open and ready to be paid.
+              - CLOSED
+                > A payment request is closed.
+              - EXPIRED
+                > A payment request has expired.
+              - MAX_YIELD_REACHED
+                > The payment request has reached its maximum amount in euro. This limit is dependent on the maximum agreed amount.
+              - MAX_SUCCESSFUL_PAYMENTS_REACHED
+                > The payment request has reached its maximum amount of payments. The maximum amount of payments per request can be either set to one or unlimited.
+          example: 'OPEN'
+    
+    PaymentRequsetResponse:
+      type: object
+      properties:
+        email:
+          type: string
+        description:
+          type: string
+        referenceId:
+          type: string
+        paymentReferenceToken:
+          type: string
+        amountInCents:
+          type: integer
+        paymentURL:
+          type: string
+        paymentType:
+          type: string
+          enum: ['SUCCESSFUL','ERROR']
+        createdDateTime:
+          type: string
+          format: date-time
+          example: '2019-09-09T12:34:56.000Z'
+          description: 'Timestamp when the payment request was created. Format: YYYY-MM-DD:HH:mm:ss.SSSZ.'  
+        expiryDate:
+          type: string
+          format: date
+          example: '2020-03-03'
+          description: 'Date after the payment request will expire. Format: YYYY-MM-DD.'
+        status:
+          type: string
+          enum: ['OPEN', 'CLOSED', 'EXPIRED', 'MAX_YIELD_REACHED', 'MAX_SUCCESSFUL_PAYMENTS_REACHED']
+          description: |
+            Status of the payment request  
+            
+    getPaymentRequestListSuccess:
+      type: object
+      properties:
+              paymentRequests:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PaymentRequsetResponse"
+              totalElementCount:
+                type: integer
+                format: "int32"
+                description: "Total amount of payments which match the parameters provided."
+                example: 75      
+          
+    getPaymentListSuccess:
+      type: object
+      properties:
+              payments:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Payment"
+                minItems: 0
+                maxItems: 50
+                description: Payments
+              totalElementCount:
+                type: integer
+                format: "int32"
+                description: "Total amount of payments which match the parameters provided."
+                example: 75 
+    Payment:
+      type: object
+      properties:
+        paymentToken:
+          type: string
+          format: uuid
+          description: 'Unique token identifying this payment.'
+          example: '21ef7413-cc3c-4c80-9272-6710fada28e4'
+        tikkieId:
+          type: string
+          example: '000012345678'
+          description: 'Unique ID identifying this payment. This will be displayed on the payers statement.'
+        counterPartyName:
+          type: string
+          example: 'E. Xample'
+          description: 'Name of the payer.'
+        counterPartyAccountNumber:
+          type: string
+          example: 'NL01ABNA1234567890'
+          description: 'IBAN of the payer.'
+        amountInCents:
+          type: integer
+          example: 1500
+          format: "int32"
+          description: 'Amount, in cents, which was paid (euros).'
+        description:
+          type: string
+          example: 'Invoice 1815'
+          description: 'Description of the payment request, which the payer or payers will see.'
+          maxLength: 35
+        createdDateTime:
+          type: string
+          format: date-time
+          example: '2019-09-09T12:34:56.000Z'
+          description: 'Timestamp when the payment was created. Format: YYYY-MM-DD:HH:mm:ss.SSSZ.'
+        refunds:
+          type: array
+          description: 'List of refunds performed on this payment.'
+          minItems: 0
+          maxItems: 50
+          items:
+            $ref: '#/components/schemas/Refund'
+    Refund:
+      type: object
+      properties:
+        refundToken:
+          type: string
+          description: 'Unique token identifying this refund.'
+          example: 'abcdzr8hnVWTgXXcFRLUMc'
+        amountInCents:
+          type: integer
+          format: "int32"
+          description: 'Amount of the refund in cents (euros).'
+          example: 1000
+        description:
+          type: string
+          description: 'Description of the refund.'
+          example: 'Refunded 10.00 for broken product.'
+          maxLength: 35
+        referenceId:
+          type: string
+          pattern: "^[a-zA-Z0-9!&'()+-./:?_`, ]{1,35}$"
+          example: 'inv_1815_ref_1'
+          description: 'ID for the reference of the API consumer.'
+          maxLength: 35
+        createdDateTime:
+          type: string
+          format: date-time
+          example: '2019-09-09T12:34:56.000Z'
+          description: 'Timestamp when the refund was created. Format: YYYY-MM-DD:HH:mm:ss.SSSZ.'
+        status:
+          type: string
+          enum: ['PENDING', 'PAID']
+          description: |
+            Status of the refund.
+
+            Status Description:
+              ---
+              - PENDING
+                > The refund has been scheduled and will be completed as soon as there is enough money in the account. If there is not enough money in the account on a particular day, the refund will be carried over to the next day, and completed when the amount is available.
+
+                > The refund will remain in a scheduled state indefinitely, until the amount is available and the refund is executed.
+              - PAID
+                > The refund has been paid out.
+          example: 'PAID'          
+        
+   
