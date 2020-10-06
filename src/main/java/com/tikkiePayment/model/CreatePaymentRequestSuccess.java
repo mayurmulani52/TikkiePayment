@@ -47,10 +47,10 @@ public class CreatePaymentRequestSuccess {
   private String referenceId = null;
 
   @SerializedName("createdDateTime")
-  private OffsetDateTime createdDateTime = null;
+  private String createdDateTime = null;
 
   @SerializedName("expiryDate")
-  private LocalDate expiryDate = null;
+  private String expiryDate = null;
 
   /**
    * Status of the payment request  Status description:   ---   - OPEN     &gt; A payment request is open and ready to be paid.   - CLOSED     &gt; A payment request is closed.   - EXPIRED     &gt; A payment request has expired.   - MAX_YIELD_REACHED     &gt; The payment request has reached its maximum amount in euro. This limit is dependent on the maximum agreed amount.   - MAX_SUCCESSFUL_PAYMENTS_REACHED     &gt; The payment request has reached its maximum amount of payments. The maximum amount of payments per request can be either set to one or unlimited. 
@@ -189,7 +189,7 @@ public class CreatePaymentRequestSuccess {
     this.referenceId = referenceId;
   }
 
-  public CreatePaymentRequestSuccess createdDateTime(OffsetDateTime createdDateTime) {
+  public CreatePaymentRequestSuccess createdDateTime(String createdDateTime) {
     this.createdDateTime = createdDateTime;
     return this;
   }
@@ -199,15 +199,15 @@ public class CreatePaymentRequestSuccess {
    * @return createdDateTime
   **/
   @Schema(example = "2019-09-09T12:34:56Z", description = "Timestamp when the payment request was created. Format: YYYY-MM-DD:HH:mm:ss.SSSZ.")
-  public OffsetDateTime getCreatedDateTime() {
+  public String getCreatedDateTime() {
     return createdDateTime;
   }
 
-  public void setCreatedDateTime(OffsetDateTime createdDateTime) {
+  public void setCreatedDateTime(String createdDateTime) {
     this.createdDateTime = createdDateTime;
   }
 
-  public CreatePaymentRequestSuccess expiryDate(LocalDate expiryDate) {
+  public CreatePaymentRequestSuccess expiryDate(String expiryDate) {
     this.expiryDate = expiryDate;
     return this;
   }
@@ -217,11 +217,11 @@ public class CreatePaymentRequestSuccess {
    * @return expiryDate
   **/
   @Schema(example = "Tue Mar 03 00:00:00 GMT 2020", description = "Date after the payment request will expire. Format: YYYY-MM-DD.")
-  public LocalDate getExpiryDate() {
+  public String getExpiryDate() {
     return expiryDate;
   }
 
-  public void setExpiryDate(LocalDate expiryDate) {
+  public void setExpiryDate(String expiryDate) {
     this.expiryDate = expiryDate;
   }
 

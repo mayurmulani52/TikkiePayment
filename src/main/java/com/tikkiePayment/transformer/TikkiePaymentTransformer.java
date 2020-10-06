@@ -15,10 +15,11 @@ public class TikkiePaymentTransformer {
 	
 	public static PaymentRequestCreationRequest createPaymentRequestCreationRequest(CreatePaymentRequest request) {
 		
+		logger.info("createPaymentRequestCreationRequest transformer invoked!");
 		PaymentRequestCreationRequest paymentRequestCreationRequest = new PaymentRequestCreationRequest();
 		paymentRequestCreationRequest.setAmountInCents(request.getAmountInCents());
 		paymentRequestCreationRequest.setDescription(request.getDescription());
-		paymentRequestCreationRequest.setExpiryDate(request.getExpiryDate());
+		paymentRequestCreationRequest.setExpiryDate(request.getExpiryDate().toString());
 		paymentRequestCreationRequest.setReferenceId(request.getReferenceId());
 		
 		return paymentRequestCreationRequest;
@@ -26,6 +27,7 @@ public class TikkiePaymentTransformer {
 	
 	public static CreatePaymentRequestSuccess transformPaymentRequestSuccessResponse(PaymentRequestCreationResponse creationResponse) {
 		
+		logger.info("transformPaymentRequestSuccessResponse transformer invoked!");
 		CreatePaymentRequestSuccess paymentRequestSuccess = new CreatePaymentRequestSuccess();
 		paymentRequestSuccess.setAmountInCents(creationResponse.getAmountInCents());
 		paymentRequestSuccess.setCreatedDateTime(creationResponse.getCreatedDateTime());

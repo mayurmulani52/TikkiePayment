@@ -1,4 +1,4 @@
-package com.tikkiepayment.sercurity;
+/*package com.tikkiepayment.sercurity;
 
 import java.io.IOException;
 
@@ -43,4 +43,4 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.getOutputStream().println(objectMapper.writeValueAsString(apiError));
     }
 
-}
+}*/

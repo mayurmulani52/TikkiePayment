@@ -12,6 +12,7 @@
 
 package com.tikkiepayment.external.tikkie.model;
 
+
 import java.util.Objects;
 
 import org.threeten.bp.LocalDate;
@@ -32,7 +33,7 @@ public class PaymentRequestCreationRequest {
   private String description = null;
 
   @SerializedName("expiryDate")
-  private LocalDate expiryDate = null;
+  private String expiryDate = null;
 
   @SerializedName("referenceId")
   private String referenceId = null;
@@ -73,7 +74,7 @@ public class PaymentRequestCreationRequest {
     this.description = description;
   }
 
-  public PaymentRequestCreationRequest expiryDate(LocalDate expiryDate) {
+  public PaymentRequestCreationRequest expiryDate(String expiryDate) {
     this.expiryDate = expiryDate;
     return this;
   }
@@ -83,11 +84,11 @@ public class PaymentRequestCreationRequest {
    * @return expiryDate
   **/
   @Schema(example = "Tue Feb 04 00:00:00 GMT 2020", description = "Date after which the payment request will expire and cannot be paid. Format is yyyy-mm-dd.")
-  public LocalDate getExpiryDate() {
+  public String getExpiryDate() {
     return expiryDate;
   }
 
-  public void setExpiryDate(LocalDate expiryDate) {
+  public void setExpiryDate(String expiryDate) {
     this.expiryDate = expiryDate;
   }
 

@@ -12,11 +12,12 @@
 
 package com.tikkiepayment.model;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
-import org.threeten.bp.LocalDate;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 /**
@@ -25,19 +26,21 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public class CreatePaymentRequest {
 	
-	  @SerializedName("email")
+	@JsonProperty("email")
 	  private String email = null;
 
-	  @SerializedName("amountInCents")
+	  @JsonProperty("amountInCents")
 	  private Integer amountInCents = null;
 
-	  @SerializedName("description")
+	  @JsonProperty("description")
 	  private String description = null;
 
-	  @SerializedName("expiryDate")
+	  @JsonFormat
+      (shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+	  @JsonProperty("expiryDate")
 	  private LocalDate expiryDate = null;
 
-	  @SerializedName("referenceId")
+	  @JsonProperty("referenceId")
 	  private String referenceId = null;
 
 	  public CreatePaymentRequest amountInCents(Integer amountInCents) {

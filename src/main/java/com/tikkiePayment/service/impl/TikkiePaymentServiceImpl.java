@@ -52,7 +52,7 @@ public class TikkiePaymentServiceImpl implements TikkiePaymentService {
 				auditPaymentRequest.setPaymentURL(responseSuccess.getUrl());
 			}
 			paymentRequestSuccess = TikkiePaymentTransformer.transformPaymentRequestSuccessResponse(responseSuccess);
-		} catch (TikkiePaymentRuntimeException e) {
+		} catch (Exception e) {
 			auditPaymentRequest.setPaymentType("ERROR");
 			throw e;
 		} finally {
@@ -89,6 +89,7 @@ public class TikkiePaymentServiceImpl implements TikkiePaymentService {
 		auditPaymentRequest.setExpiryDate(request.getExpiryDate().toString());
 		auditPaymentRequest.setReferenceId(request.getReferenceId());
 		auditPaymentRequest.setCreatedDateTime(new Date());
+		auditPaymentRequest.setPaymentType("ERROR"); //set default error if payment creation successful then it will be changed
 
 		return auditPaymentRequest;
 
