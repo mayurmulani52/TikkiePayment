@@ -40,7 +40,7 @@ public class TikkiePaymentRestController {
 	public ResponseEntity<CreatePaymentRequestSuccess> createPaymentRequest( @Valid @RequestBody CreatePaymentRequest body) throws TikkiePaymentRuntimeException{
 		logger.info("calling createPaymentRequest!");
 		
-		return new ResponseEntity<>(new CreatePaymentRequestSuccess()
+		return new ResponseEntity<>(tikkiePaymentService.createTikkiePaymentService(body)
 				, HttpStatus.OK);
 	}
 
@@ -69,7 +69,7 @@ public class TikkiePaymentRestController {
 	
 	@PostMapping(value = "/paymentsOfPaymentRequest")
 	public ResponseEntity<PaymentListResponse> paymentsOfPaymentRequest(
-			@Valid @RequestParam(value = "page", required = true) String paymentRequestToken ,
+			@Valid @RequestParam(value = "paymentRequestToken", required = true) String paymentRequestToken ,
 			@Valid @RequestParam(value = "page") Optional<Integer> page,
 			@Valid @RequestParam(value = "size") Optional<Integer> size,@Valid @RequestParam(value = "fromDateTime") Optional<String> fromDateTime,
 			@Valid @RequestParam(value = "toDateTime") Optional<String> toDateTime, HttpServletRequest request) throws TikkiePaymentRuntimeException{
@@ -85,8 +85,7 @@ public class TikkiePaymentRestController {
 			pageSize = size.get();
 		}
 		
-		
-		return new ResponseEntity<>(new PaymentListResponse()
+		return new ResponseEntity<>(tikkiePaymentService.paymentsOfPaymentRequest(paymentRequestToken, currentPage, pageSize, fromDateTime.get(), toDateTime.get())
 				, HttpStatus.OK);
 	}
 }

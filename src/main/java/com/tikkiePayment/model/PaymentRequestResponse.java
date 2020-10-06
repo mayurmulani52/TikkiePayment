@@ -30,7 +30,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  */
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-10-05T18:33:16.985Z[GMT]")
-public class PaymentRequsetResponse {
+public class PaymentRequestResponse {
   @SerializedName("email")
   private String email = null;
 
@@ -146,7 +146,7 @@ public class PaymentRequsetResponse {
   }  @SerializedName("status")
   private StatusEnum status = null;
 
-  public PaymentRequsetResponse email(String email) {
+  public PaymentRequestResponse email(String email) {
     this.email = email;
     return this;
   }
@@ -164,7 +164,7 @@ public class PaymentRequsetResponse {
     this.email = email;
   }
 
-  public PaymentRequsetResponse description(String description) {
+  public PaymentRequestResponse description(String description) {
     this.description = description;
     return this;
   }
@@ -182,7 +182,7 @@ public class PaymentRequsetResponse {
     this.description = description;
   }
 
-  public PaymentRequsetResponse referenceId(String referenceId) {
+  public PaymentRequestResponse referenceId(String referenceId) {
     this.referenceId = referenceId;
     return this;
   }
@@ -200,7 +200,7 @@ public class PaymentRequsetResponse {
     this.referenceId = referenceId;
   }
 
-  public PaymentRequsetResponse paymentReferenceToken(String paymentReferenceToken) {
+  public PaymentRequestResponse paymentReferenceToken(String paymentReferenceToken) {
     this.paymentReferenceToken = paymentReferenceToken;
     return this;
   }
@@ -218,7 +218,7 @@ public class PaymentRequsetResponse {
     this.paymentReferenceToken = paymentReferenceToken;
   }
 
-  public PaymentRequsetResponse amountInCents(Integer amountInCents) {
+  public PaymentRequestResponse amountInCents(Integer amountInCents) {
     this.amountInCents = amountInCents;
     return this;
   }
@@ -236,7 +236,7 @@ public class PaymentRequsetResponse {
     this.amountInCents = amountInCents;
   }
 
-  public PaymentRequsetResponse paymentURL(String paymentURL) {
+  public PaymentRequestResponse paymentURL(String paymentURL) {
     this.paymentURL = paymentURL;
     return this;
   }
@@ -254,7 +254,7 @@ public class PaymentRequsetResponse {
     this.paymentURL = paymentURL;
   }
 
-  public PaymentRequsetResponse paymentType(PaymentTypeEnum paymentType) {
+  public PaymentRequestResponse paymentType(PaymentTypeEnum paymentType) {
     this.paymentType = paymentType;
     return this;
   }
@@ -272,7 +272,7 @@ public class PaymentRequsetResponse {
     this.paymentType = paymentType;
   }
 
-  public PaymentRequsetResponse createdDateTime(OffsetDateTime createdDateTime) {
+  public PaymentRequestResponse createdDateTime(OffsetDateTime createdDateTime) {
     this.createdDateTime = createdDateTime;
     return this;
   }
@@ -290,7 +290,7 @@ public class PaymentRequsetResponse {
     this.createdDateTime = createdDateTime;
   }
 
-  public PaymentRequsetResponse expiryDate(LocalDate expiryDate) {
+  public PaymentRequestResponse expiryDate(LocalDate expiryDate) {
     this.expiryDate = expiryDate;
     return this;
   }
@@ -308,7 +308,7 @@ public class PaymentRequsetResponse {
     this.expiryDate = expiryDate;
   }
 
-  public PaymentRequsetResponse status(StatusEnum status) {
+  public PaymentRequestResponse status(StatusEnum status) {
     this.status = status;
     return this;
   }
@@ -335,7 +335,7 @@ public class PaymentRequsetResponse {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    PaymentRequsetResponse paymentRequsetResponse = (PaymentRequsetResponse) o;
+    PaymentRequestResponse paymentRequsetResponse = (PaymentRequestResponse) o;
     return Objects.equals(this.email, paymentRequsetResponse.email) &&
         Objects.equals(this.description, paymentRequsetResponse.description) &&
         Objects.equals(this.referenceId, paymentRequsetResponse.referenceId) &&

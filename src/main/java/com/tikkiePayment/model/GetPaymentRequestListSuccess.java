@@ -26,19 +26,19 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2020-10-05T18:33:16.985Z[GMT]")
 public class GetPaymentRequestListSuccess {
   @SerializedName("paymentRequests")
-  private List<PaymentRequsetResponse> paymentRequests = null;
+  private List<PaymentRequestResponse> paymentRequests = null;
 
   @SerializedName("totalElementCount")
   private Integer totalElementCount = null;
 
-  public GetPaymentRequestListSuccess paymentRequests(List<PaymentRequsetResponse> paymentRequests) {
+  public GetPaymentRequestListSuccess paymentRequests(List<PaymentRequestResponse> paymentRequests) {
     this.paymentRequests = paymentRequests;
     return this;
   }
 
-  public GetPaymentRequestListSuccess addPaymentRequestsItem(PaymentRequsetResponse paymentRequestsItem) {
+  public GetPaymentRequestListSuccess addPaymentRequestsItem(PaymentRequestResponse paymentRequestsItem) {
     if (this.paymentRequests == null) {
-      this.paymentRequests = new ArrayList<PaymentRequsetResponse>();
+      this.paymentRequests = new ArrayList<PaymentRequestResponse>();
     }
     this.paymentRequests.add(paymentRequestsItem);
     return this;
@@ -49,11 +49,11 @@ public class GetPaymentRequestListSuccess {
    * @return paymentRequests
   **/
   @Schema(description = "")
-  public List<PaymentRequsetResponse> getPaymentRequests() {
+  public List<PaymentRequestResponse> getPaymentRequests() {
     return paymentRequests;
   }
 
-  public void setPaymentRequests(List<PaymentRequsetResponse> paymentRequests) {
+  public void setPaymentRequests(List<PaymentRequestResponse> paymentRequests) {
     this.paymentRequests = paymentRequests;
   }
 

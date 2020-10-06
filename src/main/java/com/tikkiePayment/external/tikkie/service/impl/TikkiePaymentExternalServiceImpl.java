@@ -42,7 +42,7 @@ public class TikkiePaymentExternalServiceImpl implements TikkiePaymentExternalSe
 
 	@Override
 	public PaymentRequestCreationResponse createPaymentRequestCreation(
-			PaymentRequestCreationRequest paymentCreationRequest) {
+			PaymentRequestCreationRequest paymentCreationRequest) throws TikkiePaymentRuntimeException {
 		
 		String webserviceURL = tikkiePaymentSandboxURL + CREATE_PAYMENT_REQUEST;
 		PaymentRequestCreationResponse resp = webserviceUtil.triggerPostRestAPIWithAudit(webserviceURL,
@@ -53,7 +53,7 @@ public class TikkiePaymentExternalServiceImpl implements TikkiePaymentExternalSe
 
 	@Override
 	public PaymentRequestsListResponse getAllPaymentRequestList(int pageNumber, int pageSize, String fromDateTime,
-			String toDateTime) {
+			String toDateTime) throws TikkiePaymentRuntimeException{
 
 		String webserviceURL = tikkiePaymentSandboxURL + GET_PAYMENT_REQUESTS;
 		
@@ -71,7 +71,7 @@ public class TikkiePaymentExternalServiceImpl implements TikkiePaymentExternalSe
 
 	@Override
 	public PaymentListResponse getAllPaymentList(String paymentRequestToken, int pageNumber, int pageSize,
-			String fromDateTime, String toDateTime, boolean includeRefunds) {
+			String fromDateTime, String toDateTime, boolean includeRefunds) throws TikkiePaymentRuntimeException {
 
 		String webserviceURL = tikkiePaymentSandboxURL +"/"+ paymentRequestToken+ GET_PAYMENTS;
 		String urlParameters ="pageNumber="+pageNumber+"&pageSize="+pageSize+"&includeRefunds="+includeRefunds;
@@ -94,7 +94,7 @@ public class TikkiePaymentExternalServiceImpl implements TikkiePaymentExternalSe
 	}
 
 	@Cacheable(value = "getAccessToken")
-	private String getAccessToken() {
+	private String getAccessToken() throws TikkiePaymentRuntimeException{
 		log.info("==========triggering getAccessToken===========");
 		String accessToken = null;
 		String webserviceURL = tikkiePaymentSandboxURL+AUTH_TOKEN;
