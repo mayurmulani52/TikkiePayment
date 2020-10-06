@@ -1,22 +1,26 @@
-image: docker:latest
+# This workflow will build a Java project with Gradle
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
 
-services:
-- docker:dind
+name: Java CI with Gradle
 
-stages:
-- build
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
+jobs:
+  build:
 
-build: 
-  image: openjdk:8-jdk
-  stage: build
-  script:
-    - ./gradlew build -x test
-  artifacts:
-    paths:
-      - build/libs/*.jar
-    expire_in: 1 week
-  only:
-    - main
+    runs-on: ubuntu-latest
 
-
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    - name: Build with Gradle
+      run: ./gradlew build
