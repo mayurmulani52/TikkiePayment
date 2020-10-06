@@ -1,0 +1,22 @@
+image: docker:latest
+
+services:
+- docker:dind
+
+stages:
+- build
+
+
+build: 
+  image: openjdk:8-jdk
+  stage: build
+  script:
+    - ./gradlew build -x test
+  artifacts:
+    paths:
+      - build/libs/*.jar
+    expire_in: 1 week
+  only:
+    - main
+
+
