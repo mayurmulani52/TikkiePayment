@@ -7,6 +7,7 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,10 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tikkiepayment.exception.TikkiePaymentRuntimeException;
 import com.tikkiepayment.external.tikkie.model.PaymentListResponse;
 import com.tikkiepayment.model.CreatePaymentRequest;
 import com.tikkiepayment.model.CreatePaymentRequestSuccess;
 import com.tikkiepayment.model.GetPaymentRequestListSuccess;
+import com.tikkiepayment.service.TikkiePaymentService;
 
 
 @RestController
@@ -30,10 +33,12 @@ public class TikkiePaymentRestController {
 	private static final int DEFAULT_CURRENT_PAGE = 0;
 	private static final int DEFAULT_CURRENT_PAGESIZE = 10;
 	
+	@Autowired
+	private TikkiePaymentService tikkiePaymentService;
+	
 	@PostMapping(value = "/createPaymentRequest")
-	public ResponseEntity<CreatePaymentRequestSuccess> createPaymentRequest( @Valid @RequestBody CreatePaymentRequest body){
+	public ResponseEntity<CreatePaymentRequestSuccess> createPaymentRequest( @Valid @RequestBody CreatePaymentRequest body) throws TikkiePaymentRuntimeException{
 		logger.info("calling createPaymentRequest!");
-		
 		
 		return new ResponseEntity<>(new CreatePaymentRequestSuccess()
 				, HttpStatus.OK);
@@ -44,7 +49,7 @@ public class TikkiePaymentRestController {
 			@Valid @RequestParam(value = "referenceId") Optional<String> referenceId,
 			@Valid @RequestParam(value = "page") Optional<Integer> page,
 			@Valid @RequestParam(value = "size") Optional<Integer> size,@Valid @RequestParam(value = "fromDateTime") Optional<String> fromDateTime,
-			@Valid @RequestParam(value = "toDateTime") Optional<String> toDateTime, HttpServletRequest request){
+			@Valid @RequestParam(value = "toDateTime") Optional<String> toDateTime, HttpServletRequest request) throws TikkiePaymentRuntimeException{
 		logger.info("calling getAuditOfpaymentRequests!");
 		
 		int currentPage = DEFAULT_CURRENT_PAGE;
@@ -67,7 +72,7 @@ public class TikkiePaymentRestController {
 			@Valid @RequestParam(value = "page", required = true) String paymentRequestToken ,
 			@Valid @RequestParam(value = "page") Optional<Integer> page,
 			@Valid @RequestParam(value = "size") Optional<Integer> size,@Valid @RequestParam(value = "fromDateTime") Optional<String> fromDateTime,
-			@Valid @RequestParam(value = "toDateTime") Optional<String> toDateTime, HttpServletRequest request){
+			@Valid @RequestParam(value = "toDateTime") Optional<String> toDateTime, HttpServletRequest request) throws TikkiePaymentRuntimeException{
 		logger.info("calling paymentsOfPaymentRequest!");
 		
 		int currentPage = DEFAULT_CURRENT_PAGE;
