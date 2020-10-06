@@ -14,10 +14,10 @@ public class DefaultController {
         return "Hello, Welcome to Tikkie Payment Application!";
     }
 	
-	@PreAuthorize("#oauth2.hasScope('profile')")
+	/*@PreAuthorize("#oauth2.hasScope('profile')")
     @GetMapping("/protected/")
     public String helloWorldProtected(Principal principal) {
         return "Hello VIP " + principal.getName();
     }
-	
+	*/
 }
