@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,7 +45,7 @@ public class TikkiePaymentRestController {
 				, HttpStatus.OK);
 	}
 
-	@PostMapping(value = "/getAuditOfpaymentRequests")
+	@GetMapping(value = "/getAuditOfpaymentRequests")
 	public ResponseEntity<GetPaymentRequestListSuccess> getAuditOfpaymentRequests(@Valid @RequestParam(value = "email") Optional<String> email, @Valid @RequestParam(value = "paymentRequestToken") Optional<String> paymentRequestToken, 
 			@Valid @RequestParam(value = "referenceId") Optional<String> referenceId,
 			@Valid @RequestParam(value = "page") Optional<Integer> page,
@@ -67,7 +68,7 @@ public class TikkiePaymentRestController {
 				, HttpStatus.OK);
 	}
 	
-	@PostMapping(value = "/paymentsOfPaymentRequest")
+	@GetMapping(value = "/paymentsOfPaymentRequest")
 	public ResponseEntity<PaymentListResponse> paymentsOfPaymentRequest(
 			@Valid @RequestParam(value = "paymentRequestToken", required = true) String paymentRequestToken ,
 			@Valid @RequestParam(value = "page") Optional<Integer> page,

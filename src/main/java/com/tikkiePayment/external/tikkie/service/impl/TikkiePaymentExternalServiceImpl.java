@@ -29,6 +29,8 @@ public class TikkiePaymentExternalServiceImpl implements TikkiePaymentExternalSe
 	@Value("${tikkie.payment.base.sandbox.url}")
 	private String tikkiePaymentSandboxURL;
 	
+	private static String getAccessTokenForAPP=null;
+	
 	@Value("${tikkie.payment.api.key}")
 	private String tikkiePaymentAPIKEY;
 	
@@ -57,13 +59,13 @@ public class TikkiePaymentExternalServiceImpl implements TikkiePaymentExternalSe
 
 		String webserviceURL = tikkiePaymentSandboxURL + GET_PAYMENT_REQUESTS;
 		
-		String urlParameters ="pageNumber="+pageNumber+"&pageSize="+pageSize;
+		String urlParameters ="?pageNumber="+pageNumber+"&pageSize="+pageSize;
 		if(fromDateTime!=null && toDateTime!=null && !fromDateTime.isEmpty() && !toDateTime.isEmpty()) {
 			urlParameters = urlParameters+"&fromDateTime="+fromDateTime+"&toDateTime="+toDateTime;
 		}
 		
 		webserviceURL = webserviceURL+urlParameters;
-		PaymentRequestsListResponse resp = webserviceUtil.triggerPostRestAPIWithAudit(webserviceURL,
+		PaymentRequestsListResponse resp = webserviceUtil.triggerGetRestAPI(webserviceURL,
 				null, PaymentRequestsListResponse.class, getAuthHeader());
 		log.info("getAllPaymentRequestList webservice called");
 		return resp;
@@ -73,13 +75,13 @@ public class TikkiePaymentExternalServiceImpl implements TikkiePaymentExternalSe
 	public PaymentListResponse getAllPaymentList(String paymentRequestToken, int pageNumber, int pageSize,
 			String fromDateTime, String toDateTime, boolean includeRefunds) throws TikkiePaymentRuntimeException {
 
-		String webserviceURL = tikkiePaymentSandboxURL +"/"+ paymentRequestToken+ GET_PAYMENTS;
-		String urlParameters ="pageNumber="+pageNumber+"&pageSize="+pageSize+"&includeRefunds="+includeRefunds;
+		String webserviceURL = tikkiePaymentSandboxURL +"/paymentrequests/"+ paymentRequestToken+ GET_PAYMENTS;
+		String urlParameters ="?pageNumber="+pageNumber+"&pageSize="+pageSize+"&includeRefunds="+includeRefunds;
 		if(fromDateTime!=null && toDateTime!=null && !fromDateTime.isEmpty() && !toDateTime.isEmpty()) {
 			urlParameters = urlParameters+"&fromDateTime="+fromDateTime+"&toDateTime="+toDateTime;
 		}
 		webserviceURL = webserviceURL+urlParameters;
-		PaymentListResponse resp = webserviceUtil.triggerPostRestAPIWithAudit(webserviceURL,
+		PaymentListResponse resp = webserviceUtil.triggerGetRestAPI(webserviceURL,
 				null, PaymentListResponse.class, getAuthHeader());
 		log.info("getAllPaymentList webservice called");
 		return resp;
@@ -87,7 +89,7 @@ public class TikkiePaymentExternalServiceImpl implements TikkiePaymentExternalSe
 	
 	private HttpHeaders getAuthHeader() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("X-App-Token", getAccessToken());
+		headers.add("X-App-Token", getAccessTokenForAPP==null?getAccessToken():getAccessTokenForAPP);
 		headers.set("API-Key", tikkiePaymentAPIKEY);
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		return headers;
@@ -116,6 +118,7 @@ public class TikkiePaymentExternalServiceImpl implements TikkiePaymentExternalSe
 			throw new TikkiePaymentRuntimeException("Something went wrong! Pleaser try again later!"+e.getMessage());
 		}
 		log.info("Access token =" + accessToken);
+		getAccessTokenForAPP= accessToken;
 		return accessToken;
 	}
 
