@@ -1,26 +1,26 @@
 # TikkiePayment
-Tikkie Payment Backend APIs which allows users to create, retrieve and search for Payments. This sample project is configured with Tikkoe sandbox Payment Gateway. 
+Tikkie Payment Backend APIs which allows users to create, retrieve and search for Payments. This sample project is configured with Tikkie sandbox Payment Gateway. 
 
-Please follow below mentioned steps to get Tikkie Payment Sandbox API Key.
+API Yaml file is residing under /yaml directory where swagger document is attached to invoke the APIs
 
-(1) Register and Create an Account.
-    
-     Go to https://developer.abnamro.com/ and click Sign up
-     Enter your details, and click Create an account.
-     Developer Support will send you an activation link by email.
-     Click the activation link.
-     
-(2) Create and Register an Application.
-    
-    Log in to your account.
-    In the top navigation bar, click My Apps.
-    Click Add a new App or +.
-    In the App name field, enter a name for your application.
-    In the API product field, select Tikkie API, and click Submit.
-    
-(3) Obtain your API Key.
+Mongo DB is used to store audit of payment requests regardless success or failure with API integration. Number of tables are stored in Mongo DB : Audit, AuditOfPaymentRequest, AuditExternalAPI
 
-    In the Top Navigation bar, Click My Apps.
-    Click on the APP you created.
-    Copy the API Key Number.
+This project has been configured with Java with CI gradle Pipeline on Github so on every push git command, Pipeline will be triggered to build the project by having this can check project build is failing or not.
 
+All end rest points are configured with Okta OAuth2.0. Configuration with okta has been done with encryption parameters in application.properties file.
+
+Tikkie payment API gateway also configured to integrate payment apis.
+
+Postman Json structure is kept inside /postman-json directory to test apis through postman client
+
+
+#### Building for source
+
+For local development:
+```sh
+./gradlew clean build docker -x test
+```
+## Install Lombok
+Project uses lombok to generate getter, setter, constructors and other helpful stuff. 
+
+<img src="https://projectlombok.org/img/lombok-installer.png" width="450">
