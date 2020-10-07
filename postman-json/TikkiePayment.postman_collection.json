@@ -1,0 +1,172 @@
+{
+	"info": {
+		"_postman_id": "6458278b-bd68-492b-a419-de87e3960600",
+		"name": "TikkiePayment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "createPaymentRequest",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJraWQiOiJTSWl1X0N3R3F0RVkyOVRxVm1McnVzYk5lNUlkVWNaS0kzeEFKSkxkZWVjIiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULlc1M1ExVWkzejRJZWw0QmIwcUV3amotaXZIZ3JYbW41UW9vVTNRWGJmMGMiLCJpc3MiOiJodHRwczovL2Rldi00MjgxMzgub2t0YS5jb20vb2F1dGgyL2RlZmF1bHQiLCJhdWQiOiJhcGk6Ly9kZWZhdWx0IiwiaWF0IjoxNjAyMDY3NTUyLCJleHAiOjE2MDIwNzExNTIsImNpZCI6IjBvYTdjZGRmUGlEb1k4ZUdjNWQ1IiwidWlkIjoiMDB1NjZ1bTJDS2NYZEVlWlM1ZDUiLCJzY3AiOlsib3BlbmlkIl0sInN1YiI6Im1heXVybXVsYW5pNTJAZ21haWwuY29tIn0.GE9x7mPmS_1pLUZ4PAruHagE6qQqkNA88QWDz5ajFTNzNYLWkr-Xc5j1aRWDgC-_pUh1ONdTyhhYUCtDM8q4TkPjLGbZodTzzj-vkxwebqsjAuTnt0tbiOh4oheg46c3ag9L-EeYWwfSHP1Ig8KvAKyyPQHPf701d962ySoOeCOibpc9fK-89_V2VXmt5Hj6SzQQrf47YWXLpirRVC7wlCbkbxpGwDHGQ5B8wez29kOKwE2zFT3XD27J7IMFZUoOW4gNhm5u-tdUcL_u4DgTDU62KWx8OF9AfN4YdGLSIwnptg0ivamJdfaTQ8e_x_WijlpkXCgFrjkzejCMSAxCCg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "bearer 00e-BSBBzeboaeV0z9adEgUuEExHOmsJp-gvZ-QUm2",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"user@example.com\",\r\n  \"amountInCents\": 1500,\r\n  \"description\": \"Invoice 1815\",\r\n   \"expiryDate\": \"2020-12-04\",\r\n  \"referenceId\": \"inv_1815\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8081/tikkie-payment/createPaymentRequest",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"tikkie-payment",
+						"createPaymentRequest"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "welcome page",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "accessToken",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJraWQiOiJTSWl1X0N3R3F0RVkyOVRxVm1McnVzYk5lNUlkVWNaS0kzeEFKSkxkZWVjIiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULldSamE5cHhndXJEZllnUnZyQ1NLWlFtS0dIRFVmR1g1WWhFNGdreFQ1bVEiLCJpc3MiOiJodHRwczovL2Rldi00MjgxMzgub2t0YS5jb20vb2F1dGgyL2RlZmF1bHQiLCJhdWQiOiJhcGk6Ly9kZWZhdWx0IiwiaWF0IjoxNjAxNzQzMDU4LCJleHAiOjE2MDE3NDY2NTgsImNpZCI6IjBvYTY3ODR0WFNKT09xRTRTNWQ1IiwidWlkIjoiMDB1NjZ1bTJDS2NYZEVlWlM1ZDUiLCJzY3AiOlsib3BlbmlkIl0sInN1YiI6Im1heXVybXVsYW5pNTJAZ21haWwuY29tIn0.RjaEbvjTTc630FTRhXAv8rxe-Y5-7Wugv405zhCYeWxUdeOD3KJ-hnlQVKFzweUjLko7_lbYSAoAZu_7PcOD6AXC4qqbj8Knk5WnAU8zXt6JmkQwlqOud2yedIJkwOjbAwwJUOse7ngxfr43SIa8Bpc5wvm1vzwSCRU1e52HFFovXgSvadnuXfrROEsX-DGYtvt-lcG6tg2i5k8HKx0b44TSG3EMFN1xYLm2HU2P_gT06zcsHLpSbrIJ-905YyWglpFGcC9clyIfSa9EA5ClM3oJPZ0KRs60w12u_56wugEIPGh7Ftoh1CpxCrH45BueLsP6RyPanyDpbklDBE0eiw",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8081/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getAuditOfpaymentRequests",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/tikkie-payment/getAuditOfpaymentRequests?page=1&size=10",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"tikkie-payment",
+						"getAuditOfpaymentRequests"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "size",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "paymentsOfPaymentRequest",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/tikkie-payment/paymentsOfPaymentRequest?paymentRequestToken=oZTxSfcXJFzxkpCfiHcUzJ&page=1&size=10&fromDateTime=2020-10-04T00:00:00.000Z&toDateTime=2020-10-07T23:59:00.000Z",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"tikkie-payment",
+						"paymentsOfPaymentRequest"
+					],
+					"query": [
+						{
+							"key": "paymentRequestToken",
+							"value": "oZTxSfcXJFzxkpCfiHcUzJ"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "size",
+							"value": "10"
+						},
+						{
+							"key": "fromDateTime",
+							"value": "2020-10-04T00:00:00.000Z"
+						},
+						{
+							"key": "toDateTime",
+							"value": "2020-10-07T23:59:00.000Z"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
