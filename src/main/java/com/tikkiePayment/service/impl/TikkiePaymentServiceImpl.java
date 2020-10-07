@@ -1,10 +1,14 @@
 package com.tikkiepayment.service.impl;
 
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +22,8 @@ import com.tikkiepayment.external.tikkie.service.TikkiePaymentExternalService;
 import com.tikkiepayment.model.CreatePaymentRequest;
 import com.tikkiepayment.model.CreatePaymentRequestSuccess;
 import com.tikkiepayment.model.GetPaymentRequestListSuccess;
+import com.tikkiepayment.model.PaymentRequestResponse;
+import com.tikkiepayment.repository.AuditPaymentRequestRepository;
 import com.tikkiepayment.service.TikkiePaymentService;
 import com.tikkiepayment.transformer.TikkiePaymentTransformer;
 
@@ -31,7 +37,7 @@ public class TikkiePaymentServiceImpl implements TikkiePaymentService {
 	private TikkiePaymentExternalService externalService;
 
 	@Autowired
-	private com.tikkiepayment.repository.AuditPaymentRequest auditPaymentRepository;
+	private AuditPaymentRequestRepository auditPaymentRepository;
 
 	@Override
 	public CreatePaymentRequestSuccess createTikkiePaymentService(CreatePaymentRequest request)
@@ -69,14 +75,35 @@ public class TikkiePaymentServiceImpl implements TikkiePaymentService {
 			throws TikkiePaymentRuntimeException {
 
 		logger.info("getAuditOfpaymentRequests service layer called!");
-		return null;
+
+		page = page - 1;
+		if (page < 0)
+			throw new TikkiePaymentRuntimeException("Page index must be greater than zero!");
+		else if (size <= 0)
+			throw new TikkiePaymentRuntimeException("Size index must be greater than zero!");
+
+		Page<AuditPaymentRequest> listOfAuditPaymentRequest = auditPaymentRepository
+				.findAll(PageRequest.of(page, size, Sort.by("createdDateTime").descending()));
+		
+		Long count = auditPaymentRepository.count();
+		
+		
+		GetPaymentRequestListSuccess responseSuccess = new GetPaymentRequestListSuccess();
+		
+		List<PaymentRequestResponse> paymentRequestResponse = TikkiePaymentTransformer.transformAuditPaymentRequestResponse(listOfAuditPaymentRequest.getContent());
+		
+		responseSuccess.setTotalElementCount(count!=null?count.intValue():0);
+		responseSuccess.setPaymentRequests(paymentRequestResponse);
+
+		return responseSuccess;
 	}
 
 	@Override
 	public PaymentListResponse paymentsOfPaymentRequest(String paymentRequestToken, int page, int size,
 			String fromDateTime, String toDateTime) throws TikkiePaymentRuntimeException {
 		logger.info("paymentsOfPaymentRequest service layer called!");
-		return externalService.getAllPaymentList(paymentRequestToken, page, size, fromDateTime, toDateTime, Boolean.TRUE);
+		return externalService.getAllPaymentList(paymentRequestToken, page, size, fromDateTime, toDateTime,
+				Boolean.TRUE);
 	}
 
 	private AuditPaymentRequest createNewAuditPaymentRequest(CreatePaymentRequest request) {
@@ -89,7 +116,8 @@ public class TikkiePaymentServiceImpl implements TikkiePaymentService {
 		auditPaymentRequest.setExpiryDate(request.getExpiryDate().toString());
 		auditPaymentRequest.setReferenceId(request.getReferenceId());
 		auditPaymentRequest.setCreatedDateTime(new Date());
-		auditPaymentRequest.setPaymentType("ERROR"); //set default error if payment creation successful then it will be changed
+		auditPaymentRequest.setPaymentType("ERROR"); // set default error if payment creation successful then it will be
+														// changed
 
 		return auditPaymentRequest;
 

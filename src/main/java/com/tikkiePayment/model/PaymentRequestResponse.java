@@ -13,10 +13,8 @@
 package com.tikkiepayment.model;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Objects;
-
-import org.threeten.bp.LocalDate;
-import org.threeten.bp.OffsetDateTime;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
@@ -94,10 +92,10 @@ public class PaymentRequestResponse {
   private PaymentTypeEnum paymentType = null;
 
   @SerializedName("createdDateTime")
-  private OffsetDateTime createdDateTime = null;
+  private Date createdDateTime = null;
 
   @SerializedName("expiryDate")
-  private LocalDate expiryDate = null;
+  private String expiryDate = null;
 
   /**
    * Status of the payment request   
@@ -272,7 +270,7 @@ public class PaymentRequestResponse {
     this.paymentType = paymentType;
   }
 
-  public PaymentRequestResponse createdDateTime(OffsetDateTime createdDateTime) {
+  public PaymentRequestResponse createdDateTime(Date createdDateTime) {
     this.createdDateTime = createdDateTime;
     return this;
   }
@@ -282,15 +280,15 @@ public class PaymentRequestResponse {
    * @return createdDateTime
   **/
   @Schema(example = "2019-09-09T12:34:56Z", description = "Timestamp when the payment request was created. Format: YYYY-MM-DD:HH:mm:ss.SSSZ.")
-  public OffsetDateTime getCreatedDateTime() {
+  public Date getCreatedDateTime() {
     return createdDateTime;
   }
 
-  public void setCreatedDateTime(OffsetDateTime createdDateTime) {
+  public void setCreatedDateTime(Date createdDateTime) {
     this.createdDateTime = createdDateTime;
   }
 
-  public PaymentRequestResponse expiryDate(LocalDate expiryDate) {
+  public PaymentRequestResponse expiryDate(String expiryDate) {
     this.expiryDate = expiryDate;
     return this;
   }
@@ -300,11 +298,11 @@ public class PaymentRequestResponse {
    * @return expiryDate
   **/
   @Schema(example = "Tue Mar 03 00:00:00 GMT 2020", description = "Date after the payment request will expire. Format: YYYY-MM-DD.")
-  public LocalDate getExpiryDate() {
+  public String getExpiryDate() {
     return expiryDate;
   }
 
-  public void setExpiryDate(LocalDate expiryDate) {
+  public void setExpiryDate(String expiryDate) {
     this.expiryDate = expiryDate;
   }
 

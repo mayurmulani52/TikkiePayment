@@ -46,11 +46,11 @@ public class TikkiePaymentRestController {
 	}
 
 	@GetMapping(value = "/getAuditOfpaymentRequests")
-	public ResponseEntity<GetPaymentRequestListSuccess> getAuditOfpaymentRequests(@Valid @RequestParam(value = "email") Optional<String> email, @Valid @RequestParam(value = "paymentRequestToken") Optional<String> paymentRequestToken, 
-			@Valid @RequestParam(value = "referenceId") Optional<String> referenceId,
+	public ResponseEntity<GetPaymentRequestListSuccess> getAuditOfpaymentRequests(@Valid @RequestParam(value = "email", required = false) String email, @Valid @RequestParam(value = "paymentRequestToken", required = false) String paymentRequestToken, 
+			@Valid @RequestParam(value = "referenceId", required = false) String referenceId,
 			@Valid @RequestParam(value = "page") Optional<Integer> page,
-			@Valid @RequestParam(value = "size") Optional<Integer> size,@Valid @RequestParam(value = "fromDateTime") Optional<String> fromDateTime,
-			@Valid @RequestParam(value = "toDateTime") Optional<String> toDateTime, HttpServletRequest request) throws TikkiePaymentRuntimeException{
+			@Valid @RequestParam(value = "size") Optional<Integer> size,@Valid @RequestParam(value = "fromDateTime", required = false) String fromDateTime,
+			@Valid @RequestParam(value = "toDateTime", required = false) String toDateTime, HttpServletRequest request) throws TikkiePaymentRuntimeException{
 		logger.info("calling getAuditOfpaymentRequests!");
 		
 		int currentPage = DEFAULT_CURRENT_PAGE;
@@ -63,8 +63,7 @@ public class TikkiePaymentRestController {
 			pageSize = size.get();
 		}
 		
-		
-		return new ResponseEntity<>(new GetPaymentRequestListSuccess()
+		return new ResponseEntity<>(tikkiePaymentService.getAuditOfpaymentRequests(email, paymentRequestToken, referenceId, currentPage, pageSize, fromDateTime, toDateTime)
 				, HttpStatus.OK);
 	}
 	
