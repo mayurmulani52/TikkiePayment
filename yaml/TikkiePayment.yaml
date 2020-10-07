@@ -258,6 +258,8 @@ components:
         errorId:
           type: string
           description: The backend error ID
+          
+          
     
     CreatePaymentRequestSuccess:
       type: object
