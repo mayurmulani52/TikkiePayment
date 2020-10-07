@@ -1,6 +1,8 @@
 package com.tikkiepayment.config;
 
-/*@EnableWebSecurity
-@EnableResourceServer
-@EnableGlobalMethodSecurity(prePostEnabled = true)*/
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig  {}

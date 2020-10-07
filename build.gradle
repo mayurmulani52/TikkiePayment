@@ -65,7 +65,10 @@ dependencies {
 	//Okta dependency jars added
 	//implementation 'org.springframework.security.oauth:spring-security-oauth2:2.4.1.RELEASE'
 	//implementation('com.okta.spring:okta-spring-boot-starter:1.4.0')
+	//implementation('org.springframework.cloud:spring-cloud-starter-oauth2:2.2.4.RELEASE')
+	//implementation 'com.okta.spring:okta-spring-boot-starter:0.6.1'  
 	
+	implementation 'com.okta.spring:okta-spring-boot-starter:1.2.0'
 	implementation 'io.swagger.core.v3:swagger-annotations:2.1.4'
 	implementation 'org.threeten:threetenbp:0.7.2'
 	implementation 'com.google.code.gson:gson:2.8.0'

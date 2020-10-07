@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,6 +46,7 @@ public class TikkiePaymentRestController {
 				, HttpStatus.OK);
 	}
 
+	@PreAuthorize("#oauth2.hasScope('profile')")
 	@GetMapping(value = "/getAuditOfpaymentRequests")
 	public ResponseEntity<GetPaymentRequestListSuccess> getAuditOfpaymentRequests(@Valid @RequestParam(value = "email", required = false) String email, @Valid @RequestParam(value = "paymentRequestToken", required = false) String paymentRequestToken, 
 			@Valid @RequestParam(value = "referenceId", required = false) String referenceId,
@@ -67,6 +69,7 @@ public class TikkiePaymentRestController {
 				, HttpStatus.OK);
 	}
 	
+	@PreAuthorize("#oauth2.hasScope('profile')")
 	@GetMapping(value = "/paymentsOfPaymentRequest")
 	public ResponseEntity<PaymentListResponse> paymentsOfPaymentRequest(
 			@Valid @RequestParam(value = "paymentRequestToken", required = true) String paymentRequestToken ,
