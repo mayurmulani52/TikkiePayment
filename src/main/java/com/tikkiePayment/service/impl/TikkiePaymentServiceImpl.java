@@ -85,6 +85,11 @@ public class TikkiePaymentServiceImpl implements TikkiePaymentService {
 		Page<AuditPaymentRequest> listOfAuditPaymentRequest = auditPaymentRepository
 				.findAll(PageRequest.of(page, size, Sort.by("createdDateTime").descending()));
 		
+		
+		// As mongo atlas free doesnt support where clause 
+		/*Page<AuditPaymentRequest> listOfAuditPaymentRequest = auditPaymentRepository
+				.findByPaymentRequestTokenAndReferenceIdAndEmail(paymentRequestToken, referenceId, email, PageRequest.of(page, size, Sort.by("createdDateTime").descending()));*/
+		
 		Long count = auditPaymentRepository.count();
 		
 		
