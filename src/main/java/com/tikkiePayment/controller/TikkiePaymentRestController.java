@@ -46,7 +46,6 @@ public class TikkiePaymentRestController {
 				, HttpStatus.OK);
 	}
 
-	@PreAuthorize("#oauth2.hasScope('profile')")
 	@GetMapping(value = "/getAuditOfpaymentRequests")
 	public ResponseEntity<GetPaymentRequestListSuccess> getAuditOfpaymentRequests(@Valid @RequestParam(value = "email", required = false) String email, @Valid @RequestParam(value = "paymentRequestToken", required = false) String paymentRequestToken, 
 			@Valid @RequestParam(value = "referenceId", required = false) String referenceId,
@@ -69,7 +68,6 @@ public class TikkiePaymentRestController {
 				, HttpStatus.OK);
 	}
 	
-	@PreAuthorize("#oauth2.hasScope('profile')")
 	@GetMapping(value = "/paymentsOfPaymentRequest")
 	public ResponseEntity<PaymentListResponse> paymentsOfPaymentRequest(
 			@Valid @RequestParam(value = "paymentRequestToken", required = true) String paymentRequestToken ,
